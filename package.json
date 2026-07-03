@@ -25,7 +25,7 @@
     "@lucide/astro": "^1.17.0",
     "astro": "^6.4.6",
     "octokit": "^5.0.5",
-    "sharp": "^0.35.0",
+    "sharp": "^0.35.1",
     "simple-icons-astro": "^16.1.0"
   },
   "devDependencies": {
