@@ -23,7 +23,7 @@
     "@astrojs/sitemap": "^3.7.3",
     "@atproto/lex": "^0.1.4",
     "@lucide/astro": "^1.20.0",
-    "astro": "^6.4.7",
+    "astro": "^6.4.8",
     "octokit": "^5.0.5",
     "sharp": "^0.35.1",
     "simple-icons-astro": "^16.1.0"
