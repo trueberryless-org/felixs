@@ -1,47 +1,28 @@
 ---
 import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import Section from "@/components/utils/Section.astro";
-import Card from "@/components/projects/Card.astro";
-import { getOwnProjects, getContributedProjects } from "@/lib/github";
+import Projects from "@/components/projects/Projects.astro";
 
 export const prerender = false;
 
 Astro.response.headers.set(
   "Cache-Control",
-  "public, max-age=0, s-maxage=604800, stale-while-revalidate=31536000"
+  "public, max-age=86400, stale-while-revalidate=7776000"
 );
-
-const contributedProjects = await getContributedProjects();
-const ownProjects = await getOwnProjects();
+Astro.response.headers.set(
+  "CDN-Cache-Control",
+  "public, max-age=604800, stale-while-revalidate=7776000"
+);
 ---
 
-<LayoutBreadcrumbs title="Projects | trueberryless">
+<LayoutBreadcrumbs title="Projects | Felix Schneider">
   <div class="projects-wrapper">
     <h1>Open Source</h1>
 
-    {
-      contributedProjects.length > 0 && (
-        <Section title="Contributions">
-          <div class="projects-grid">
-            {contributedProjects.map((project) => (
-              <Card {...project} />
-            ))}
-          </div>
-        </Section>
-      )
-    }
-
-    {
-      ownProjects.length > 0 && (
-        <Section title="Personal creations">
-          <div class="projects-grid">
-            {ownProjects.map((project) => (
-              <Card {...project} />
-            ))}
-          </div>
-        </Section>
-      )
-    }
+    <Projects server:defer>
+      <div slot="fallback" class="loading-indicator">
+        Loading projects from GitHub...
+      </div>
+    </Projects>
   </div>
 </LayoutBreadcrumbs>
 
@@ -52,15 +33,10 @@ const ownProjects = await getOwnProjects();
     gap: 24px;
   }
 
-  .projects-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-
-  @media (min-width: 640px) {
-    .projects-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .loading-indicator {
+    padding: 48px;
+    text-align: center;
+    font-style: italic;
+    color: #666;
   }
 </style>

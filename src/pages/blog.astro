@@ -13,7 +13,7 @@ Astro.response.headers.set(
 const { groupedPosts, years } = await getGroupedPosts();
 ---
 
-<LayoutBreadcrumbs title="Blog">
+<LayoutBreadcrumbs title="Blog | Felix Schneider">
   <h1 class="title">Blog Posts</h1>
   <div class="blog-container">
     {years.map((year) => <YearGroup year={year} posts={groupedPosts[year]} />)}
