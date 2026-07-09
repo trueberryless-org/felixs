@@ -21,7 +21,7 @@ importers:
         specifier: ^0.1.4
         version: 0.1.7
       '@lucide/astro':
-        specifier: ^1.20.0
+        specifier: ^1.21.0
         version: 1.23.0(astro@6.4.8(@netlify/blobs@10.7.9)(@types/node@24.13.2)(jiti@2.6.1)(rollup@4.52.3)(yaml@2.8.1))
       astro:
         specifier: ^6.4.8
