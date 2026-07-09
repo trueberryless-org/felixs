@@ -22,7 +22,7 @@
     "@astrojs/node": "^10.1.4",
     "@astrojs/sitemap": "^3.7.3",
     "@atproto/lex": "^0.1.4",
-    "@lucide/astro": "^1.20.0",
+    "@lucide/astro": "^1.21.0",
     "astro": "^6.4.8",
     "octokit": "^5.0.5",
     "sharp": "^0.35.1",
