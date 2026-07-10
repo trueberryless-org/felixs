@@ -30,7 +30,7 @@ importers:
         specifier: ^5.0.5
         version: 5.0.5
       sharp:
-        specifier: ^0.35.1
+        specifier: ^0.35.2
         version: 0.35.2
       simple-icons-astro:
         specifier: ^16.1.0
