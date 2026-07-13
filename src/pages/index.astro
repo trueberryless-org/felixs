@@ -6,7 +6,24 @@ import RecentPosts from "@/components/landing/RecentPosts.astro";
 import RecentBlueskyPosts from "@/components/landing/RecentBlueskyPosts.astro";
 import ReadingSummary from "@/components/landing/ReadingSummary.astro";
 import UpcomingEvents from "@/components/landing/UpcomingEvents.astro";
-import SectionSkeleton from "@/components/utils/SectionSkeleton.astro";
+import {
+  buildReadingSummary,
+  fetchBluesky,
+  fetchBooks,
+  fetchEvents,
+  fetchPosts,
+} from "@/lib/data";
+
+export const prerender = true;
+
+const [posts, books, events, bluesky] = await Promise.all([
+  fetchPosts().catch(() => null),
+  fetchBooks().catch(() => null),
+  fetchEvents().catch(() => null),
+  fetchBluesky().catch(() => null),
+]);
+
+const summary = books ? buildReadingSummary(books) : null;
 ---
 
 <Layout title="Felix Schneider">
@@ -14,20 +31,16 @@ import SectionSkeleton from "@/components/utils/SectionSkeleton.astro";
 
   <div class="content-wrapper layout-stream">
     <Intro />
-    <RecentPosts server:defer>
-      <SectionSkeleton slot="fallback" title="Recent Blog Posts" rows={3} />
-    </RecentPosts>
-    <ReadingSummary server:defer>
-      <SectionSkeleton slot="fallback" title="Reading Summary" rows={4} />
-    </ReadingSummary>
-    <UpcomingEvents server:defer>
-      <SectionSkeleton slot="fallback" title="Upcoming Events" rows={1} />
-    </UpcomingEvents>
-    <RecentBlueskyPosts server:defer>
-      <SectionSkeleton slot="fallback" title="Bluesky" rows={4} />
-    </RecentBlueskyPosts>
+    <RecentPosts posts={posts} />
+    <ReadingSummary summary={summary} />
+    <UpcomingEvents events={events} />
+    <RecentBlueskyPosts posts={bluesky} />
   </div>
 </Layout>
+
+<script>
+  import "@/scripts/hydrate";
+</script>
 
 <style>
   .layout-stream {

@@ -4,7 +4,7 @@ import sitemap from "@astrojs/sitemap";
 import { defineConfig } from "astro/config";
 
 export default defineConfig({
-  site: "https://trueberryless.org",
+  site: "https://felixs.dev",
   output: "static",
   adapter:
     process.env.ADAPTER_TYPE === "netlify"

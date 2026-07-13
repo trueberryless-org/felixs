@@ -1,95 +1,58 @@
 ---
-import { getBlueskyPosts } from "@/lib/bluesky";
-import { Heart } from "@lucide/astro";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import LiveIndicator from "@/components/utils/LiveIndicator.astro";
+import ListSkeleton from "@/components/landing/ListSkeleton.astro";
+import RecentBlueskyPostsInner from "@/components/landing/RecentBlueskyPostsInner.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
 import { actorDid } from "@/lib/const";
+import type { BlueskyPost } from "@/lib/data";
 
 interface Props {
-  fetchLimit?: number;
+  posts: BlueskyPost[] | null;
   displayLimit?: number;
 }
 
-const { fetchLimit = 100, displayLimit = 4 } = Astro.props;
-
-const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
+const { posts, displayLimit = 4 } = Astro.props;
+const hasData = Boolean(posts && posts.length > 0);
 ---
 
-{
-  filteredPosts.length > 0 && (
-    <Section title="Bluesky">
-      <ActionLink
-        href={`https://bsky.app/profile/${actorDid}`}
-        slot="header-actions"
-        text="View profile"
+<Section title="Bluesky">
+  <div slot="header-actions" class="header-cluster">
+    <LiveIndicator status={hasData ? "static" : "loading"} />
+    <ActionLink
+      href={`https://bsky.app/profile/${actorDid}`}
+      text="View profile"
+    />
+  </div>
+  <div
+    class="hydrate"
+    data-hydrate="landing/bluesky"
+    data-state={hasData ? "static" : "loading"}
+  >
+    <div data-content>
+      {
+        hasData ? (
+          <RecentBlueskyPostsInner posts={posts!} displayLimit={displayLimit} />
+        ) : (
+          <ListSkeleton rows={4} />
+        )
+      }
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My most-liked recent Bluesky posts usually appear here."
+        fallbackHref={`https://bsky.app/profile/${actorDid}`}
+        fallbackLabel="Open my Bluesky profile"
       />
-
-      <List>
-        {filteredPosts.map((post) => {
-          const postUrl = post.postUrl;
-          const text = post.text;
-          const likes = post.likes;
-
-          return (
-            <li class="list-item clickable">
-              <a
-                href={postUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="post-link"
-              >
-                <span class="item-main">
-                  <span class="post-text">{text}</span>
-                </span>
-                <span class="post-meta">
-                  <Heart class="meta-icon" />
-                  <span>{likes}</span>
-                </span>
-              </a>
-            </li>
-          );
-        })}
-      </List>
-    </Section>
-  )
-}
+    </div>
+  </div>
+</Section>
 
 <style>
-  .post-link {
+  .header-cluster {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    width: 100%;
-    text-decoration: none;
-    color: inherit;
-    gap: 1.5rem;
-  }
-  .item-main {
-    display: flex;
-    align-items: center;
-    min-width: 0;
-    flex: 1;
-    word-break: break-word;
-  }
-  .post-text {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    line-height: 1.5;
-  }
-  .post-meta {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    color: var(--text-muted);
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-  .meta-icon {
-    width: 14px;
-    height: 14px;
-    display: block;
+    gap: 12px;
   }
 </style>

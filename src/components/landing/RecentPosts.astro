@@ -1,55 +1,53 @@
 ---
-import { getAugmentedPosts, processPost } from "@/lib/blog";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import LiveIndicator from "@/components/utils/LiveIndicator.astro";
+import ListSkeleton from "@/components/landing/ListSkeleton.astro";
+import RecentPostsInner from "@/components/landing/RecentPostsInner.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import type { AugmentedPost } from "@/lib/data";
 
-const allPosts = await getAugmentedPosts();
-const filteredPosts = allPosts
-  .sort(
-    (a: any, b: any) =>
-      new Date(b.data.publishedAt).getTime() -
-      new Date(a.data.publishedAt).getTime()
-  )
-  .slice(0, 3);
----
-
-{
-  filteredPosts.length > 0 && (
-    <Section title="Recent Blog Posts">
-      <ActionLink slot="header-actions" href="/blog" text="View all" />
-
-      <List>
-        {filteredPosts.map((post) => {
-          const { title, postUrl } = processPost(post);
-          return (
-            <li class="list-item clickable">
-              <a
-                href={postUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="post-link"
-              >
-                <div class="item-left">
-                  <span class="item-main">{title}</span>
-                </div>
-                <span class="arrow">→</span>
-              </a>
-            </li>
-          );
-        })}
-      </List>
-    </Section>
-  )
+interface Props {
+  posts: AugmentedPost[] | null;
 }
 
+const { posts } = Astro.props;
+const hasData = Boolean(posts && posts.length > 0);
+---
+
+<Section title="Recent Blog Posts">
+  <div slot="header-actions" class="header-cluster">
+    <LiveIndicator status={hasData ? "static" : "loading"} />
+    <ActionLink href="/blog" text="View all" />
+  </div>
+  <div
+    class="hydrate"
+    data-hydrate="landing/recent-posts"
+    data-state={hasData ? "static" : "loading"}
+  >
+    <div data-content>
+      {
+        hasData ? (
+          <RecentPostsInner posts={posts!} />
+        ) : (
+          <ListSkeleton rows={3} />
+        )
+      }
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My blog posts live on ATproto. Once the required domains are reachable they'll appear here."
+        fallbackHref="https://leaflet.pub/p/felixs.dev"
+        fallbackLabel="Read on Leaflet"
+      />
+    </div>
+  </div>
+</Section>
+
 <style>
-  .post-link {
+  .header-cluster {
     display: flex;
-    width: 100%;
-    justify-content: space-between;
     align-items: center;
-    text-decoration: none;
-    color: inherit;
+    gap: 12px;
   }
 </style>

@@ -1,0 +1,43 @@
+---
+import Book from "@/components/books/Book.astro";
+
+interface BookItem {
+  hiveId: string;
+  title: string;
+  authors: string;
+  coverUrl: string | null;
+  rotation: string;
+  thickness: number;
+}
+
+interface Props {
+  books: BookItem[];
+}
+
+const { books } = Astro.props;
+---
+
+<div class="books-grid">
+  {
+    books.map((book) => (
+      <Book
+        title={book.title}
+        authors={book.authors}
+        coverUrl={book.coverUrl}
+        rotation={book.rotation}
+        hiveId={book.hiveId}
+        thickness={book.thickness}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 4rem 2.5rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+</style>

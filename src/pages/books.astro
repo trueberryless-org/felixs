@@ -1,46 +1,58 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import Book from "@/components/books/Book.astro";
-import { getLibraryBooks } from "@/lib/books";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import BooksContent from "@/components/books/BooksContent.astro";
+import BooksSkeleton from "@/components/books/BooksSkeleton.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import LiveIndicator from "@/components/utils/LiveIndicator.astro";
+import { fetchBooks } from "@/lib/data";
 
-export const prerender = false;
+export const prerender = true;
 
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=0, s-maxage=604800, stale-while-revalidate=31536000"
-);
-
-const books = await getLibraryBooks();
+const books = await fetchBooks().catch((err) => {
+  console.error("[books] build-time fetch failed:", err);
+  return null;
+});
+const hasData = Boolean(books && books.length > 0);
 ---
 
-<LayoutBreadcrumbs title="Bookshelf | Felix Schneider">
-  <h1 class="title">Bookshelf</h1>
-  <div class="books-grid">
-    {
-      books.map((book) => (
-        <Book
-          title={book.title}
-          authors={book.authors}
-          coverUrl={book.coverUrl}
-          rotation={book.rotation}
-          hiveId={book.hiveId}
-          thickness={book.thickness}
-        />
-      ))
-    }
+<LayoutPage title="Bookshelf | Felix Schneider">
+  <div class="page-head">
+    <h1>Bookshelf</h1>
+    <LiveIndicator status={hasData ? "static" : "loading"} />
   </div>
-</LayoutBreadcrumbs>
+
+  <div
+    class="hydrate"
+    data-hydrate="books"
+    data-state={hasData ? "static" : "loading"}
+  >
+    <div data-content>
+      {hasData ? <BooksContent books={books!} /> : <BooksSkeleton />}
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My reading log lives on ATproto through Bookhive and isn't reachable right now. You can browse it directly on Bookhive."
+        fallbackHref="https://bookhive.buzz/profile/felixs.dev"
+        fallbackLabel="Browse my bookshelf on Bookhive"
+      />
+    </div>
+  </div>
+</LayoutPage>
+
+<script>
+  import "@/scripts/hydrate";
+</script>
 
 <style>
-  .title {
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 5rem;
   }
 
-  .books-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 4rem 2.5rem;
-    padding-top: 1rem;
-    padding-bottom: 2rem;
+  h1 {
+    margin: 0;
   }
 </style>

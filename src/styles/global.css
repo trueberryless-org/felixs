@@ -140,3 +140,16 @@ a {
 ul {
   list-style: none;
 }
+
+/* Hydration state visibility */
+[data-hydrate] [data-fallback] {
+  display: none;
+}
+
+[data-hydrate][data-state="failed"] [data-content] {
+  display: none;
+}
+
+[data-hydrate][data-state="failed"] [data-fallback] {
+  display: block;
+}

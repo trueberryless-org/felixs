@@ -1,0 +1,31 @@
+---
+import List from "@/components/utils/List.astro";
+import type { ReadingSummary } from "@/lib/data";
+
+interface Props {
+  summary: ReadingSummary;
+}
+
+const { summary } = Astro.props;
+---
+
+<List>
+  <li class="list-item">
+    <span class="item-main">{summary.latest.title}</span>
+    <span class="item-meta">
+      {
+        summary.latest.startedAt
+          ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString()}`
+          : "Started: Unknown"
+      }
+    </span>
+  </li>
+  {
+    summary.favorites.map((book) => (
+      <li class="list-item">
+        <span class="item-main">{book.title}</span>
+        <span class="item-meta">{(book.stars ?? 0) / 2} stars</span>
+      </li>
+    ))
+  }
+</List>

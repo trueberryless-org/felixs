@@ -1,42 +1,54 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import Projects from "@/components/projects/Projects.astro";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import ProjectsContent from "@/components/projects/ProjectsContent.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchProjects } from "@/lib/data";
 
-export const prerender = false;
+export const prerender = true;
 
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=86400, stale-while-revalidate=7776000"
-);
-Astro.response.headers.set(
-  "CDN-Cache-Control",
-  "public, max-age=604800, stale-while-revalidate=7776000"
-);
+const data = await fetchProjects().catch((err) => {
+  console.error("[projects] build-time fetch failed:", err);
+  return null;
+});
+
+const buildDate = new Date().toLocaleDateString("en-US", {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+});
 ---
 
-<LayoutBreadcrumbs title="Projects | Felix Schneider">
-  <div class="projects-wrapper">
+<LayoutPage title="Projects | Felix Schneider">
+  <div class="page-head">
     <h1>Open Source</h1>
-
-    <Projects server:defer>
-      <div slot="fallback" class="loading-indicator">
-        Loading projects from GitHub...
-      </div>
-    </Projects>
+    {data && <span class="build-note">Updated {buildDate}</span>}
   </div>
-</LayoutBreadcrumbs>
+
+  {
+    data ? (
+      <ProjectsContent data={data} />
+    ) : (
+      <Fallback
+        description="I couldn't reach GitHub during the last build. You can browse my repositories directly on GitHub."
+        fallbackHref="https://github.com/trueberryless"
+        fallbackLabel="See my GitHub profile"
+      />
+    )
+  }
+</LayoutPage>
 
 <style>
-  .projects-wrapper {
+  .page-head {
     display: flex;
-    flex-direction: column;
-    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 24px;
   }
 
-  .loading-indicator {
-    padding: 48px;
-    text-align: center;
+  .build-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
     font-style: italic;
-    color: #666;
   }
 </style>

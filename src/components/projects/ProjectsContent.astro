@@ -1,20 +1,31 @@
 ---
 import Section from "@/components/utils/Section.astro";
 import Card from "@/components/projects/Card.astro";
-import { getOwnProjects, getContributedProjects } from "@/lib/github";
 
-const [contributedProjects, ownProjects] = await Promise.all([
-  getContributedProjects(),
-  getOwnProjects(),
-]);
+interface Project {
+  name: string;
+  description?: string | null;
+  url: string;
+  stars?: number;
+  contributions?: number;
+}
+
+interface Props {
+  data: {
+    ownProjects: Project[];
+    contributedProjects: Project[];
+  };
+}
+
+const { data } = Astro.props;
 ---
 
 {
-  contributedProjects.length > 0 && (
+  data.contributedProjects.length > 0 && (
     <Section title="Contributions">
       <div class="projects-grid">
-        {contributedProjects.map((project) => (
-          <Card {...project} />
+        {data.contributedProjects.map((p) => (
+          <Card {...p} />
         ))}
       </div>
     </Section>
@@ -22,11 +33,11 @@ const [contributedProjects, ownProjects] = await Promise.all([
 }
 
 {
-  ownProjects.length > 0 && (
+  data.ownProjects.length > 0 && (
     <Section title="Personal creations">
       <div class="projects-grid">
-        {ownProjects.map((project) => (
-          <Card {...project} />
+        {data.ownProjects.map((p) => (
+          <Card {...p} />
         ))}
       </div>
     </Section>

@@ -1,31 +1,73 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import YearGroup from "@/components/blog/YearGroup.astro";
-import { getGroupedPosts } from "@/lib/blog";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import BlogContent from "@/components/blog/BlogContent.astro";
+import BlogSkeleton from "@/components/blog/BlogSkeleton.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import LiveIndicator from "@/components/utils/LiveIndicator.astro";
+import { fetchPosts } from "@/lib/data";
+import { groupPostsByYear } from "@/lib/posts";
 
-export const prerender = false;
+export const prerender = true;
 
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=0, s-maxage=604800, stale-while-revalidate=31536000"
-);
+const posts = await fetchPosts().catch((err) => {
+  console.error("[blog] build-time fetch failed:", err);
+  return null;
+});
 
-const { groupedPosts, years } = await getGroupedPosts();
+const { years, postsByYear } = posts
+  ? groupPostsByYear(posts)
+  : { years: [] as string[], postsByYear: {} as Record<string, any[]> };
+const hasData = years.length > 0;
 ---
 
-<LayoutBreadcrumbs title="Blog | Felix Schneider">
-  <h1 class="title">Blog Posts</h1>
-  <div class="blog-container">
-    {years.map((year) => <YearGroup year={year} posts={groupedPosts[year]} />)}
+<LayoutPage title="Blog | Felix Schneider">
+  <div class="page-head">
+    <h1>Blog Posts</h1>
+    <LiveIndicator status={hasData ? "static" : "loading"} />
   </div>
-</LayoutBreadcrumbs>
+
+  <div
+    class="hydrate"
+    data-hydrate="blog"
+    data-state={hasData ? "static" : "loading"}
+  >
+    <div data-content>
+      {
+        hasData ? (
+          <BlogContent years={years} postsByYear={postsByYear} />
+        ) : (
+          <BlogSkeleton />
+        )
+      }
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My blog posts live on ATproto and aren't reachable right now. You can read them directly on Leaflet."
+        fallbackHref="https://leaflet.pub/p/felixs.dev"
+        fallbackLabel="Read on Leaflet"
+      />
+    </div>
+  </div>
+</LayoutPage>
+
+<script>
+  import "@/scripts/hydrate";
+</script>
 
 <style>
-  .title {
+  .page-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
     margin-bottom: 5rem;
   }
 
-  .blog-container {
+  h1 {
+    margin: 0;
+  }
+
+  .hydrate [data-content] > :global(*) {
     display: flex;
     flex-direction: column;
     gap: 80px;

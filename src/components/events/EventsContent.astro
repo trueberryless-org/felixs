@@ -1,0 +1,64 @@
+---
+import EventCard from "@/components/events/EventCard.astro";
+
+interface Props {
+  events: any[];
+}
+
+const { events } = Astro.props;
+const now = Date.now();
+const processed = events.map((e) => ({
+  ...e,
+  startDate: new Date(e.startDate),
+  endDate: new Date(e.endDate),
+  isPast: new Date(e.endDate).getTime() < now,
+}));
+
+const upcoming = processed.filter((e) => !e.isPast);
+const past = processed.filter((e) => e.isPast);
+---
+
+<div class="timeline-container">
+  {upcoming.map((event) => <EventCard event={event} />)}
+
+  {
+    upcoming.length > 0 && past.length > 0 && (
+      <div class="today-divider">
+        <span class="today-text">Today</span>
+      </div>
+    )
+  }
+
+  {past.map((event) => <EventCard event={event} />)}
+</div>
+
+<style>
+  .timeline-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .today-divider {
+    display: flex;
+    align-items: center;
+    margin: 20px 0 60px 0;
+    width: 100%;
+  }
+
+  .today-divider::before,
+  .today-divider::after {
+    content: "";
+    flex: 1;
+    border-top: 2px dotted var(--border);
+  }
+
+  .today-text {
+    padding: 0 24px;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+</style>

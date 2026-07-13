@@ -1,33 +1,52 @@
 ---
-import { getLiveCollection } from "astro:content";
 import BaseHead from "@/layouts/BaseHead.astro";
+import {
+  fetchBluesky,
+  fetchBooks,
+  fetchEvents,
+  fetchPosts,
+  fetchProjects,
+} from "@/lib/data";
 
 export const prerender = false;
 
-const { entries: posts, error: postsError } = await getLiveCollection("posts");
-const { entries: publications, error: publicationsError } =
-  await getLiveCollection("publications");
-const { entries: books, error: booksError } = await getLiveCollection("books");
-const { entries: rsvps, error: rsvpsError } = await getLiveCollection("rsvps");
-const { entries: blueskyPosts, error: blueskyPostsError } =
-  await getLiveCollection("blueskyPosts");
-const { entries: follows, error: followsError } =
-  await getLiveCollection("follows");
+Astro.response.headers.set("Cache-Control", "no-store");
 
-if (postsError) console.error(postsError.message);
-if (publicationsError) console.error(publicationsError.message);
-if (booksError) console.error(booksError.message);
-if (rsvpsError) console.error(rsvpsError.message);
-if (blueskyPostsError) console.error(blueskyPostsError.message);
-if (followsError) console.error(followsError.message);
+const [posts, books, events, bluesky, projects] = await Promise.allSettled([
+  fetchPosts(),
+  fetchBooks(),
+  fetchEvents(),
+  fetchBluesky(),
+  fetchProjects(),
+]);
+
+const sections: { label: string; result: PromiseSettledResult<any> }[] = [
+  { label: "Posts", result: posts },
+  { label: "Books", result: books },
+  { label: "Events", result: events },
+  { label: "Bluesky Posts", result: bluesky },
+  { label: "Projects", result: projects },
+];
+
+const summarize = (item: any): string => {
+  if (typeof item === "string") return item;
+  if (item?.title) return item.title;
+  if (item?.name) return item.name;
+  if (item?.text)
+    return item.text.substring(0, 60) + (item.text.length > 60 ? "…" : "");
+  if (item?.data?.title) return item.data.title;
+  if (item?.data?.name) return item.data.name;
+  if (item?.id) return item.id;
+  return JSON.stringify(item).substring(0, 60);
+};
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <BaseHead
-      title={"Debug Mode | Felix Schneider"}
-      description={"View the website with raw data"}
+      title="Debug Mode | Felix Schneider"
+      description="View the website with raw data"
     />
     <style>
       body {
@@ -51,143 +70,55 @@ if (followsError) console.error(followsError.message);
         word-wrap: break-word;
         font-size: 0.85rem;
       }
+      .error {
+        color: #900;
+        padding: 1rem;
+        background: #fee;
+        border-radius: 4px;
+        margin: 0.5rem 0;
+      }
+      .empty {
+        color: #666;
+        font-style: italic;
+        padding: 1rem;
+      }
     </style>
   </head>
   <body>
     <main>
       <h1>Live Overview (All Data Dump)</h1>
-
-      <section>
-        <h2>Posts</h2>
-        {
-          postsError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading posts:</strong> {postsError.message}
-            </div>
-          )
-        }
-        {
-          posts?.map((item) => (
-            <article>
-              <details>
-                <summary>{item.data.title || item.id}</summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
-
-      <section>
-        <h2>Publications</h2>
-        {
-          publicationsError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading publications:</strong>{" "}
-              {publicationsError.message}
-            </div>
-          )
-        }
-        {
-          publications?.map((item) => (
-            <article>
-              <details>
-                <summary>{item.data.name || item.id}</summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
-
-      <section>
-        <h2>Books</h2>
-        {
-          booksError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading books:</strong> {booksError.message}
-            </div>
-          )
-        }
-        {
-          books?.map((item) => (
-            <article>
-              <details>
-                <summary>{item.data.title || item.id}</summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
-
-      <section>
-        <h2>Events</h2>
-        {
-          rsvpsError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading events:</strong> {rsvpsError.message}
-            </div>
-          )
-        }
-        {
-          rsvps?.map((item) => (
-            <article>
-              <details>
-                <summary>{item.data.name || item.id}</summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
-
-      <section>
-        <h2>Bluesky Posts</h2>
-        {
-          blueskyPostsError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading blueskyPosts:</strong>{" "}
-              {blueskyPostsError.message}
-            </div>
-          )
-        }
-        {
-          blueskyPosts?.map((item) => (
-            <article>
-              <details>
-                <summary>
-                  {item.data.text
-                    ? item.data.text.substring(0, 60) + "..."
-                    : item.id}
-                </summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
-
-      <section>
-        <h2>Follows</h2>
-        {
-          followsError && (
-            <div style="color: red; padding: 1rem; background: #fee;">
-              <strong>Error loading follows:</strong> {followsError.message}
-            </div>
-          )
-        }
-        {
-          follows?.map((item) => (
-            <article>
-              <details>
-                <summary>{item.data.subject || item.id}</summary>
-                <pre>{JSON.stringify(item.data, null, 2)}</pre>
-              </details>
-            </article>
-          ))
-        }
-      </section>
+      {
+        sections.map(({ label, result }) => (
+          <section>
+            <h2>{label}</h2>
+            {result.status === "rejected" && (
+              <div class="error">
+                <strong>Error loading {label.toLowerCase()}:</strong>{" "}
+                {String(result.reason?.message || result.reason)}
+              </div>
+            )}
+            {result.status === "fulfilled" && !result.value && (
+              <div class="empty">No {label.toLowerCase()} returned.</div>
+            )}
+            {result.status === "fulfilled" &&
+              Array.isArray(result.value) &&
+              result.value.map((item: any) => (
+                <details>
+                  <summary>{summarize(item)}</summary>
+                  <pre>{JSON.stringify(item, null, 2)}</pre>
+                </details>
+              ))}
+            {result.status === "fulfilled" &&
+              result.value &&
+              !Array.isArray(result.value) && (
+                <details>
+                  <summary>{summarize(result.value)}</summary>
+                  <pre>{JSON.stringify(result.value, null, 2)}</pre>
+                </details>
+              )}
+          </section>
+        ))
+      }
     </main>
   </body>
 </html>

@@ -1,0 +1,22 @@
+---
+import YearGroup from "@/components/blog/YearGroup.astro";
+
+interface Props {
+  years: string[];
+  postsByYear: Record<string, any[]>;
+}
+
+const { years, postsByYear } = Astro.props;
+---
+
+<div class="blog-container">
+  {years.map((year) => <YearGroup year={year} posts={postsByYear[year]} />)}
+</div>
+
+<style>
+  .blog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+</style>

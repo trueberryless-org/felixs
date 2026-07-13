@@ -1,49 +1,47 @@
 ---
-import { getProcessedEvents } from "@/lib/events";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import LiveIndicator from "@/components/utils/LiveIndicator.astro";
+import ListSkeleton from "@/components/landing/ListSkeleton.astro";
+import UpcomingEventsInner from "@/components/landing/UpcomingEventsInner.astro";
+import type { Event } from "@/lib/data";
 
-const allEvents = await getProcessedEvents();
-
-const upcomingEvents = allEvents
-  .filter((e) => !e.isPast)
-  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-  .slice(0, 3);
----
-
-{
-  upcomingEvents.length > 0 && (
-    <Section title="Upcoming Events">
-      <List>
-        {upcomingEvents.map((event) => (
-          <li class="list-item clickable">
-            <a
-              href={event.atmoUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="event-link"
-            >
-              <div class="item-left">
-                <span class="item-main">
-                  {event.data.name || "Untitled Network Event"}
-                </span>
-              </div>
-              <span class="arrow">→</span>
-            </a>
-          </li>
-        ))}
-      </List>
-    </Section>
-  )
+interface Props {
+  events: Event[] | null;
 }
 
-<style>
-  .event-link {
-    display: flex;
-    width: 100%;
-    justify-content: space-between;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-  }
-</style>
+const { events } = Astro.props;
+const now = Date.now();
+const hasUpcoming = Boolean(
+  events && events.some((e) => new Date(e.startDate).getTime() > now)
+);
+---
+
+<Section title="Upcoming Events">
+  <LiveIndicator
+    slot="header-actions"
+    status={hasUpcoming ? "static" : "loading"}
+  />
+  <div
+    class="hydrate"
+    data-hydrate="landing/upcoming-events"
+    data-state={hasUpcoming ? "static" : "loading"}
+  >
+    <div data-content>
+      {
+        hasUpcoming ? (
+          <UpcomingEventsInner events={events!} />
+        ) : (
+          <ListSkeleton rows={2} />
+        )
+      }
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My RSVPs live on ATproto."
+        fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
+        fallbackLabel="See my RSVPs on atmo.rsvp"
+      />
+    </div>
+  </div>
+</Section>

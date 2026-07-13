@@ -1,0 +1,153 @@
+---
+const count = 4;
+---
+
+<div class="skeleton-timeline">
+  {
+    Array.from({ length: count }).map(() => (
+      <div class="skeleton-event">
+        <div class="skeleton-date">
+          <div class="skeleton-line date-day" />
+          <div class="skeleton-line date-name" />
+        </div>
+        <div class="skeleton-marker">
+          <div class="skeleton-dot" />
+        </div>
+        <div class="skeleton-card">
+          <div class="skeleton-content">
+            <div class="skeleton-line time" />
+            <div class="skeleton-line title" />
+            <div class="skeleton-line loc" />
+          </div>
+          <div class="skeleton-image" />
+        </div>
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .skeleton-timeline {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .skeleton-event {
+    display: flex;
+    width: 100%;
+    margin-bottom: 40px;
+  }
+
+  .skeleton-date {
+    width: 120px;
+    flex-shrink: 0;
+    padding-top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .skeleton-marker {
+    width: 40px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  .skeleton-marker::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 1px dashed var(--border);
+  }
+
+  .skeleton-dot {
+    position: absolute;
+    top: 32px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: var(--border);
+  }
+
+  .skeleton-card {
+    flex: 1;
+    display: flex;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-height: 160px;
+    overflow: hidden;
+  }
+
+  .skeleton-content {
+    flex: 1;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .skeleton-image {
+    width: 200px;
+    background: var(--bg-subtle);
+  }
+
+  .skeleton-line {
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line.date-day {
+    height: 18px;
+    width: 60%;
+  }
+  .skeleton-line.date-name {
+    height: 14px;
+    width: 40%;
+  }
+  .skeleton-line.time {
+    height: 12px;
+    width: 100px;
+  }
+  .skeleton-line.title {
+    height: 22px;
+    width: 60%;
+  }
+  .skeleton-line.loc {
+    height: 12px;
+    width: 40%;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .skeleton-event {
+      flex-direction: column;
+    }
+    .skeleton-marker {
+      display: none;
+    }
+    .skeleton-card {
+      flex-direction: column;
+    }
+    .skeleton-image {
+      width: 100%;
+      height: 180px;
+      order: -1;
+    }
+  }
+</style>
