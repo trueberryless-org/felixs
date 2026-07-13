@@ -42,9 +42,10 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
                 class="post-link"
               >
                 <span class="item-main">
-                  <span class="post-text"
-                    >{text}<ExternalIcon class="inline-external" /></span
-                  >
+                  <span class="post-text">
+                    {text}
+                    <ExternalIcon class="inline-external" />
+                  </span>
                 </span>
                 <span class="post-meta">
                   <Heart class="meta-icon" />
