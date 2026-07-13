@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 
 const { event } = Astro.props;
 const { name } = event.data;
@@ -64,6 +65,7 @@ const extraCount =
     rel="noopener noreferrer"
     class="card-container"
   >
+    <ExternalIcon size={12} class="event-external" />
     <div class="card-content">
       <span class="event-time">{timeDisplay}</span>
       <h3 class="event-name">{name}</h3>
@@ -204,12 +206,30 @@ const extraCount =
     color: inherit;
     cursor: pointer;
     overflow: hidden;
+    position: relative;
   }
 
   .card-container:hover {
     transform: translateY(-2px);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--lift-shadow);
     border-color: var(--text-muted);
+  }
+
+  .event-external {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    color: var(--text-muted);
+    background: var(--card-bg);
+    border-radius: 999px;
+    padding: 4px;
+    z-index: 2;
+    transition: transform 0.2s ease;
+  }
+
+  .card-container:hover .event-external {
+    transform: translate(2px, -2px);
+    color: var(--text);
   }
 
   @media (prefers-reduced-motion: reduce) {

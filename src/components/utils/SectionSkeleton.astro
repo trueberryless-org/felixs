@@ -1,15 +1,19 @@
 ---
 interface Props {
   title: string;
+  description?: string;
   rows?: number;
 }
 
-const { title, rows = 3 } = Astro.props;
+const { title, description, rows = 3 } = Astro.props;
 ---
 
 <section class="section-container">
   <div class="section-header">
-    <h2>{title}</h2>
+    <div class="header-titles">
+      <h2>{title}</h2>
+      {description && <p class="section-description">{description}</p>}
+    </div>
   </div>
   <div class="block-content">
     <div class="skeleton-list">
@@ -34,8 +38,15 @@ const { title, rows = 3 } = Astro.props;
   .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
+  }
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
   }
 
   h2 {
@@ -43,6 +54,13 @@ const { title, rows = 3 } = Astro.props;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--text);
+  }
+
+  .section-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
   }
 
   .skeleton-list {

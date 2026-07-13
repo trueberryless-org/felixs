@@ -11,7 +11,10 @@ const [contributedProjects, ownProjects] = await Promise.all([
 
 {
   contributedProjects.length > 0 && (
-    <Section title="Contributions">
+    <Section
+      title="Contributions"
+      description="Open source projects I've meaningfully contributed to, ordered by activity."
+    >
       <div class="projects-grid">
         {contributedProjects.map((project) => (
           <Card {...project} />
@@ -23,7 +26,10 @@ const [contributedProjects, ownProjects] = await Promise.all([
 
 {
   ownProjects.length > 0 && (
-    <Section title="Personal creations">
+    <Section
+      title="Personal creations"
+      description="Repositories I started and maintain myself — from web apps to small tools."
+    >
       <div class="projects-grid">
         {ownProjects.map((project) => (
           <Card {...project} />

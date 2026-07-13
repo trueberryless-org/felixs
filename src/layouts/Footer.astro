@@ -162,7 +162,10 @@ const socialLinks = [
     font-weight: 600;
     font-size: 0.95rem;
     color: var(--text-muted);
-    transition: color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
+    display: inline-block;
   }
 
   .icon-links a {
@@ -177,6 +180,10 @@ const socialLinks = [
   .text-links a:hover,
   .icon-links a:hover {
     color: var(--text);
+  }
+
+  .text-links a:hover {
+    transform: translateY(-2px);
   }
 
   .icon-links a:hover {

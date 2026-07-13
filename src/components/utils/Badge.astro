@@ -7,12 +7,22 @@ interface Props {
   text: string;
   icon?: ImageMetadata;
   alt?: string;
+  name?: string;
 }
 
-const { href, text, icon, alt = "Badge icon" } = Astro.props;
+const { href, text, icon, alt = "Badge icon", name } = Astro.props;
+
+const isExternal = /^(https?:)?\/\//i.test(href) || href.startsWith("mailto:");
+const badgeClass = ["badge", name ? `badge-${name}` : null]
+  .filter(Boolean)
+  .join(" ");
 ---
 
-<a href={href} class="badge">
+<a
+  href={href}
+  class={badgeClass}
+  {...isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {}}
+>
   {icon && <Image src={icon} alt={alt} width={128} />}
   <span>{text}</span>
 </a>
@@ -36,11 +46,16 @@ const { href, text, icon, alt = "Badge icon" } = Astro.props;
     text-decoration: none;
     color: var(--text);
     font-weight: 500;
-    transition: all 0.2s ease;
+    transition:
+      background 0.2s ease,
+      border-color 0.2s ease,
+      transform 0.2s ease,
+      box-shadow 0.2s ease;
   }
 
   .badge:hover {
-    background: var(--bg);
+    background: var(--card-bg);
+    box-shadow: var(--lift-shadow);
   }
 
   .badge :global(img),
@@ -49,5 +64,20 @@ const { href, text, icon, alt = "Badge icon" } = Astro.props;
     height: 1.1em;
     border-radius: 2px;
     object-fit: contain;
+  }
+
+  /* Optical alignment nudges for logos with off-center visual weight. */
+  .badge-astro :global(img) {
+    transform: translateY(-0.05em);
+    margin-top: -0.05em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .badge {
+      transition: none;
+    }
+    .badge:hover {
+      transform: translateY(-0.1em);
+    }
   }
 </style>

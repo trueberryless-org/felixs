@@ -4,6 +4,7 @@ import { Heart } from "@lucide/astro";
 import Section from "@/components/utils/Section.astro";
 import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 import { actorDid } from "@/lib/const";
 
 interface Props {
@@ -18,11 +19,15 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
 
 {
   filteredPosts.length > 0 && (
-    <Section title="Bluesky">
+    <Section
+      title="Bluesky"
+      description="Short thoughts I share on the decentralized social web."
+    >
       <ActionLink
         href={`https://bsky.app/profile/${actorDid}`}
         slot="header-actions"
         text="View profile"
+        external
       />
 
       <List>
@@ -41,6 +46,7 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
               >
                 <span class="item-main">
                   <span class="post-text">{text}</span>
+                  <ExternalIcon />
                 </span>
                 <span class="post-meta">
                   <Heart class="meta-icon" />
@@ -67,7 +73,8 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
   }
   .item-main {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    gap: 6px;
     min-width: 0;
     flex: 1;
     word-break: break-word;

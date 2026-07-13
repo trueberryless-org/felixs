@@ -1,28 +1,37 @@
 :root {
   --white: oklch(1 0 0);
   --black: oklch(0 0 0);
-  --bg: oklch(0.9455 0.03 90);
-  --bg-subtle: oklch(0.975 0.015 90);
-  --card-bg: oklch(0.975 0.022 90);
-  --badge-bg: oklch(0.975 0.022 90);
-  --text: oklch(0.18 0.02 90);
-  --text-muted: oklch(0.45 0.02 90);
-  --border: oklch(0.86 0.02 90);
+  /* Warm beige (~#F5F0E6) background, dark brown text — dedicated light palette */
+  --bg: oklch(0.955 0.017 85);
+  --bg-subtle: oklch(0.972 0.012 85);
+  --card-bg: oklch(0.988 0.008 85);
+  --badge-bg: oklch(0.985 0.01 85);
+  --text: oklch(0.22 0.03 55);
+  --text-muted: oklch(0.42 0.025 60);
+  --border: oklch(0.86 0.02 80);
   --blob-1: oklch(0.88 0.04 80 / 0.35);
   --blob-2: oklch(0.86 0.03 90 / 0.35);
   --blob-3: oklch(0.89 0.04 100 / 0.35);
-  --header-bg: oklch(0.99 0.005 75 / 0.6);
-  --header-bg-solid: oklch(0.99 0.005 75 / 1);
-  --header-shadow: oklch(0.2 0.02 75 / 0.15);
+  --header-bg: oklch(0.985 0.008 85 / 0.6);
+  --header-bg-solid: oklch(0.985 0.008 85 / 1);
+  --header-shadow: oklch(0.25 0.03 60 / 0.18);
+  --hover-bg: oklch(0.22 0.03 55 / 0.04);
+  --lift-shadow: 0 10px 24px -8px oklch(0.25 0.03 60 / 0.18);
   --radius-pill: 9999px;
   --radius-card: 12px;
   --max-width: 760px;
-  --book-pages: oklch(0.96 0.02 90);
-  --book-pages-darker: oklch(0.93 0.02 90);
+  --book-pages: oklch(0.96 0.02 85);
+  --book-pages-darker: oklch(0.92 0.02 85);
   --book-cover-bg: var(--card-bg);
-  --book-back: oklch(0.86 0.02 90);
-  --glow-star: oklch(0.85 0.15 90);
-  --glow-pr: oklch(0.65 0.2 300);
+  --book-back: oklch(0.86 0.02 80);
+  --glow-star: oklch(0.78 0.16 85);
+  --glow-pr: oklch(0.6 0.2 300);
+  --text-gradient: linear-gradient(
+    135deg,
+    oklch(0.22 0.03 55) 0%,
+    oklch(0.32 0.06 45) 50%,
+    oklch(0.22 0.03 55) 100%
+  );
 }
 
 :root.dark {
@@ -32,19 +41,27 @@
   --badge-bg: oklch(0.22 0.005 250);
   --text: oklch(0.95 0.01 240);
   --text-muted: oklch(0.7 0.02 240);
-  --border: oklch(0.2 0.005 250);
+  --border: oklch(0.28 0.008 250);
   --blob-1: oklch(0.15 0.04 250 / 0.35);
   --blob-2: oklch(0.15 0.03 260 / 0.35);
   --blob-3: oklch(0.15 0.04 270 / 0.35);
   --header-bg: oklch(0.12 0.005 250 / 0.6);
   --header-bg-solid: oklch(0.12 0.005 250 / 1);
   --header-shadow: oklch(0 0 0 / 0.5);
+  --hover-bg: oklch(0.95 0.01 240 / 0.06);
+  --lift-shadow: 0 10px 24px -8px oklch(0 0 0 / 0.55);
   --book-pages: oklch(0.9 0.02 90);
   --book-pages-darker: oklch(0.8 0.02 90);
   --book-cover-bg: var(--card-bg);
   --book-back: oklch(0.6 0.005 250);
   --glow-star: oklch(0.85 0.15 90);
   --glow-pr: oklch(0.65 0.2 300);
+  --text-gradient: linear-gradient(
+    180deg,
+    oklch(0.98 0.003 240) 0%,
+    oklch(0.82 0.005 240) 45%,
+    oklch(0.55 0.008 240) 100%
+  );
 }
 
 :root.celestial {
@@ -81,12 +98,20 @@
     oklch(0.06 0.03 295)
   );
   --header-shadow: oklch(0.02 0.01 295 / 0.5);
+  --hover-bg: oklch(0.96 0.01 315 / 0.08);
+  --lift-shadow: 0 10px 24px -8px oklch(0.02 0.01 295 / 0.6);
   --book-pages: oklch(0.94 0.02 315);
   --book-pages-darker: oklch(0.86 0.03 315);
   --book-cover-bg: var(--card-bg);
   --book-back: oklch(0.15 0.04 315);
   --glow-star: oklch(0.88 0.12 330);
   --glow-pr: oklch(0.75 0.14 310);
+  --text-gradient: linear-gradient(
+    135deg,
+    oklch(0.96 0.01 315) 0%,
+    oklch(0.82 0.1 320) 50%,
+    oklch(0.96 0.01 315) 100%
+  );
 }
 
 * {
@@ -109,9 +134,14 @@ body {
   color: var(--text);
   font-family:
     "Datatype",
-    system-ui,
-    -apple-system,
-    sans-serif;
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    Monaco,
+    Consolas,
+    "Liberation Mono",
+    "Courier New",
+    monospace;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   display: flex;
@@ -123,6 +153,7 @@ main {
   background: var(--bg);
   padding-top: 100px;
   flex: 1;
+  min-height: calc(100vh - 100px);
 }
 
 .content-wrapper {

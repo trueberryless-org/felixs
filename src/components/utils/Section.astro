@@ -1,14 +1,18 @@
 ---
 interface Props {
   title: string;
+  description?: string;
 }
 
-const { title } = Astro.props;
+const { title, description } = Astro.props;
 ---
 
 <section class="section-container">
   <div class="section-header">
-    <h2>{title}</h2>
+    <div class="header-titles">
+      <h2>{title}</h2>
+      {description && <p class="section-description">{description}</p>}
+    </div>
     <div class="header-actions">
       <slot name="header-actions" />
     </div>
@@ -27,8 +31,16 @@ const { title } = Astro.props;
   .section-header {
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-start;
+    gap: 16px;
     margin-bottom: 20px;
+  }
+
+  .header-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
   }
 
   h2 {
@@ -38,9 +50,18 @@ const { title } = Astro.props;
     color: var(--text);
   }
 
+  .section-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+    margin: 0;
+  }
+
   .header-actions {
     display: flex;
     align-items: center;
+    flex-shrink: 0;
+    padding-top: 4px;
   }
 
   .block-content {
@@ -49,3 +70,4 @@ const { title } = Astro.props;
     gap: 12px;
   }
 </style>
+

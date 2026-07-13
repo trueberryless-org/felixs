@@ -2,6 +2,8 @@
 import { getProcessedEvents } from "@/lib/events";
 import Section from "@/components/utils/Section.astro";
 import List from "@/components/utils/List.astro";
+import ActionLink from "@/components/utils/ActionLink.astro";
+import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 
 const allEvents = await getProcessedEvents();
 
@@ -13,7 +15,12 @@ const upcomingEvents = allEvents
 
 {
   upcomingEvents.length > 0 && (
-    <Section title="Upcoming Events">
+    <Section
+      title="Upcoming Events"
+      description="Community meetups and conferences I'm planning to attend."
+    >
+      <ActionLink slot="header-actions" href="/events" text="View all" />
+
       <List>
         {upcomingEvents.map((event) => (
           <li class="list-item clickable">
@@ -28,7 +35,7 @@ const upcomingEvents = allEvents
                   {event.data.name || "Untitled Network Event"}
                 </span>
               </div>
-              <span class="arrow">→</span>
+              <ExternalIcon class="row-icon" />
             </a>
           </li>
         ))}
@@ -45,5 +52,11 @@ const upcomingEvents = allEvents
     align-items: center;
     text-decoration: none;
     color: inherit;
+    gap: 12px;
+  }
+
+  .row-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 </style>

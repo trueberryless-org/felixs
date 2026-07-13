@@ -1,5 +1,6 @@
 ---
 import { Image } from "astro:assets";
+import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 
 interface Props {
   title: string;
@@ -37,7 +38,10 @@ const { title, authors, coverUrl, rotation, hiveId, thickness } = Astro.props;
     </div>
   </div>
   <div class="book-meta">
-    <h3 class="title">{title}</h3>
+    <h3 class="title">
+      <span>{title}</span>
+      <ExternalIcon size={11} class="book-external" />
+    </h3>
     <p class="author">{authors}</p>
   </div>
 </a>
@@ -169,10 +173,23 @@ const { title, authors, coverUrl, rotation, hiveId, thickness } = Astro.props;
     color: var(--text-muted);
     margin-bottom: 0.25rem;
     line-height: 1.3;
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .title > span {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
+  }
+
+  .book-external {
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 
   .author {
