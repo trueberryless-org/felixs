@@ -4,7 +4,6 @@ import { Heart } from "@lucide/astro";
 import Section from "@/components/utils/Section.astro";
 import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
-import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 import { actorDid } from "@/lib/const";
 
 interface Props {
@@ -42,10 +41,7 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
                 class="post-link"
               >
                 <span class="item-main">
-                  <span class="post-text">
-                    {text}
-                    <ExternalIcon class="inline-external" />
-                  </span>
+                  <span class="post-text">{text}</span>
                 </span>
                 <span class="post-meta">
                   <Heart class="meta-icon" />
@@ -81,11 +77,6 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.5;
-  }
-  .inline-external {
-    color: var(--text-muted);
-    margin-left: 6px;
-    vertical-align: -1px;
   }
   .post-meta {
     display: flex;
