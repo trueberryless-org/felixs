@@ -4,6 +4,7 @@ import Fallback from "@/components/utils/Fallback.astro";
 import LiveIndicator from "@/components/utils/LiveIndicator.astro";
 import ListSkeleton from "@/components/landing/ListSkeleton.astro";
 import UpcomingEventsInner from "@/components/landing/UpcomingEventsInner.astro";
+import ActionLink from "@/components/utils/ActionLink.astro";
 import type { Event } from "@/lib/data";
 
 interface Props {
@@ -18,10 +19,10 @@ const hasUpcoming = Boolean(
 ---
 
 <Section title="Upcoming Events">
-  <LiveIndicator
-    slot="header-actions"
-    status={hasUpcoming ? "static" : "loading"}
-  />
+  <div slot="header-actions" class="header-cluster">
+    <LiveIndicator status={hasUpcoming ? "static" : "loading"} />
+    <ActionLink href="/events" text="View all" />
+  </div>
   <div
     class="hydrate"
     data-hydrate="landing/upcoming-events"
@@ -45,3 +46,11 @@ const hasUpcoming = Boolean(
     </div>
   </div>
 </Section>
+
+<style>
+  .header-cluster {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+</style>

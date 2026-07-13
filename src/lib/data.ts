@@ -122,25 +122,42 @@ async function fetchOwnRepos(): Promise<OwnProject[]> {
     }));
 }
 
+async function searchPRs(owner: string) {
+  const items: any[] = [];
+  let totalCount = 0;
+  const perPage = 100;
+  const maxPages = 10;
+
+  for (let page = 1; page <= maxPages; page++) {
+    const data = await jsonFetch<{ items: any[]; total_count: number }>(
+      `${GITHUB_API}/search/issues?q=${encodeURIComponent(
+        `type:pr is:merged author:${GITHUB_USERNAME} user:${owner}`
+      )}&per_page=${perPage}&page=${page}`,
+      { headers: githubHeaders() }
+    ).catch(() => null);
+
+    if (!data) break;
+    totalCount = data.total_count ?? totalCount;
+    items.push(...(data.items ?? []));
+    if (!data.items?.length || items.length >= totalCount) break;
+  }
+
+  return { items, totalCount: totalCount || items.length };
+}
+
 async function fetchOrg(
   owner: string,
   description: string
 ): Promise<ContributedOrg> {
   const [search, profile] = await Promise.all([
-    jsonFetch<{ items: any[] }>(
-      `${GITHUB_API}/search/issues?q=${encodeURIComponent(
-        `type:pr is:merged author:${GITHUB_USERNAME} user:${owner}`
-      )}&per_page=100`,
-      { headers: githubHeaders() }
-    ).catch(() => ({ items: [] })),
+    searchPRs(owner).catch(() => ({ items: [], totalCount: 0 })),
     jsonFetch<any>(`${GITHUB_API}/users/${owner}`, {
       headers: githubHeaders(),
     }).catch(() => null),
   ]);
 
-  const prs = search.items || [];
   const repoNames = new Set<string>();
-  for (const pr of prs) {
+  for (const pr of search.items) {
     const nameWithOwner = pr.repository_url?.split("/").slice(-2).join("/");
     if (nameWithOwner) repoNames.add(nameWithOwner);
   }
@@ -165,7 +182,7 @@ async function fetchOrg(
     description: description || profile?.bio || "",
     url,
     stars: stars.reduce((a, b) => a + b, 0),
-    contributions: prs.length,
+    contributions: search.totalCount,
   };
 }
 

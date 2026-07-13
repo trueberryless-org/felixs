@@ -16,27 +16,25 @@ const hasData = Boolean(events && events.length > 0);
 ---
 
 <LayoutPage title="Events | Felix Schneider">
-  <div class="events-page">
-    <div class="events-header">
-      <h1>Events</h1>
-      <LiveIndicator status={hasData ? "static" : "loading"} />
-    </div>
+  <div class="page-head">
+    <h1>Events</h1>
+    <LiveIndicator status={hasData ? "static" : "loading"} />
+  </div>
 
-    <div
-      class="hydrate"
-      data-hydrate="events"
-      data-state={hasData ? "static" : "loading"}
-    >
-      <div data-content>
-        {hasData ? <EventsContent events={events!} /> : <EventsSkeleton />}
-      </div>
-      <div data-fallback>
-        <Fallback
-          description="My RSVPs live on ATproto and aren't reachable right now. You can view them directly on atmo.rsvp."
-          fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
-          fallbackLabel="See my RSVPs on atmo.rsvp"
-        />
-      </div>
+  <div
+    class="hydrate"
+    data-hydrate="events"
+    data-state={hasData ? "static" : "loading"}
+  >
+    <div data-content>
+      {hasData ? <EventsContent events={events!} /> : <EventsSkeleton />}
+    </div>
+    <div data-fallback>
+      <Fallback
+        description="My RSVPs live on ATproto and aren't reachable right now. You can view them directly on atmo.rsvp."
+        fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
+        fallbackLabel="See my RSVPs on atmo.rsvp"
+      />
     </div>
   </div>
 </LayoutPage>
@@ -46,33 +44,23 @@ const hasData = Boolean(events && events.length > 0);
 </script>
 
 <style>
-  .events-page {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .events-header {
+  .page-head {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 40px;
-    padding-left: 160px;
-    box-sizing: border-box;
+    margin-bottom: 5rem;
   }
 
   h1 {
-    font-size: 2.2rem;
-    font-weight: 600;
-    color: var(--text);
     margin: 0;
+    padding-left: 160px;
     letter-spacing: 0.05em;
   }
 
   @media (max-width: 768px) {
-    .events-header {
+    h1 {
       padding-left: 0;
-      margin-bottom: 24px;
     }
   }
 </style>
