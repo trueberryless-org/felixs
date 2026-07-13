@@ -8,16 +8,13 @@ interface Props {
 const { href, text, external } = Astro.props;
 
 const isExternal =
-  external ??
-  (/^(https?:)?\/\//i.test(href) || href.startsWith("mailto:"));
+  external ?? (/^(https?:)?\/\//i.test(href) || href.startsWith("mailto:"));
 ---
 
 <a
   href={href}
   class="action-link"
-  {...(isExternal
-    ? { target: "_blank", rel: "noopener noreferrer" }
-    : {})}
+  {...isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {}}
 >
   {text}
   {

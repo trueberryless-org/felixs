@@ -86,9 +86,7 @@ const summary = await getReadingSummary();
                         >
                           {isHalf && (
                             <defs>
-                              <linearGradient
-                                id={`half-${book.hiveId ?? i}`}
-                              >
+                              <linearGradient id={`half-${book.hiveId ?? i}`}>
                                 <stop offset="50%" stop-color="currentColor" />
                                 <stop
                                   offset="50%"

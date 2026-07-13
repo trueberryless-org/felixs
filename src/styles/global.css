@@ -133,15 +133,8 @@ body {
   background: var(--bg-subtle);
   color: var(--text);
   font-family:
-    "Datatype",
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    "Liberation Mono",
-    "Courier New",
-    monospace;
+    "Datatype", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   display: flex;
