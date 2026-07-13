@@ -65,10 +65,12 @@ const extraCount =
     rel="noopener noreferrer"
     class="card-container"
   >
-    <ExternalIcon size={12} class="event-external" />
     <div class="card-content">
       <span class="event-time">{timeDisplay}</span>
-      <h3 class="event-name">{name}</h3>
+      <h3 class="event-name">
+        <span class="event-name-text">{name}</span>
+        <ExternalIcon size={12} class="event-external" />
+      </h3>
 
       {
         locationText && (
@@ -206,7 +208,6 @@ const extraCount =
     color: inherit;
     cursor: pointer;
     overflow: hidden;
-    position: relative;
   }
 
   .card-container:hover {
@@ -216,15 +217,11 @@ const extraCount =
   }
 
   .event-external {
-    position: absolute;
-    top: 14px;
-    right: 14px;
     color: var(--text-muted);
-    background: var(--card-bg);
-    border-radius: 999px;
-    padding: 4px;
-    z-index: 2;
-    transition: transform 0.2s ease;
+    flex-shrink: 0;
+    transition:
+      transform 0.2s ease,
+      color 0.2s ease;
   }
 
   .card-container:hover .event-external {
@@ -233,13 +230,17 @@ const extraCount =
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .card-container {
+    .card-container,
+    .event-external {
       transition: none;
     }
     .card-container:hover {
       transform: none;
       box-shadow: none;
       border-color: var(--border);
+    }
+    .card-container:hover .event-external {
+      transform: none;
     }
   }
 
@@ -259,14 +260,22 @@ const extraCount =
   }
 
   .event-name {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
     font-size: 1.5rem;
     font-weight: 600;
     color: var(--text);
     margin: 0 0 12px 0;
     letter-spacing: 0.02em;
+    min-width: 0;
+  }
+
+  .event-name-text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    min-width: 0;
   }
 
   .event-location {

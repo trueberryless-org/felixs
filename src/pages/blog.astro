@@ -1,6 +1,7 @@
 ---
 import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
 import YearGroup from "@/components/blog/YearGroup.astro";
+import PageHeader from "@/components/utils/PageHeader.astro";
 import { getGroupedPosts } from "@/lib/blog";
 
 export const prerender = false;
@@ -14,17 +15,21 @@ const { groupedPosts, years } = await getGroupedPosts();
 ---
 
 <LayoutBreadcrumbs title="Blog | Felix Schneider">
-  <h1 class="title">Blog Posts</h1>
+  <PageHeader title="Blog Posts">
+    <Fragment slot="description">
+      I write recipes, notes and longer thoughts on <a
+        href="https://leaflet.pub/p/felixs.dev"
+        target="_blank"
+        rel="noopener noreferrer">Leaflet</a
+      >.
+    </Fragment>
+  </PageHeader>
   <div class="blog-container">
     {years.map((year) => <YearGroup year={year} posts={groupedPosts[year]} />)}
   </div>
 </LayoutBreadcrumbs>
 
 <style>
-  .title {
-    margin-bottom: 5rem;
-  }
-
   .blog-container {
     display: flex;
     flex-direction: column;

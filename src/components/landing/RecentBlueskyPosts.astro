@@ -19,10 +19,7 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
 
 {
   filteredPosts.length > 0 && (
-    <Section
-      title="Bluesky"
-      description="Short thoughts I share on the decentralized social web."
-    >
+    <Section title="Bluesky">
       <ActionLink
         href={`https://bsky.app/profile/${actorDid}`}
         slot="header-actions"
@@ -45,8 +42,9 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
                 class="post-link"
               >
                 <span class="item-main">
-                  <span class="post-text">{text}</span>
-                  <ExternalIcon />
+                  <span class="post-text"
+                    >{text}<ExternalIcon class="inline-external" /></span
+                  >
                 </span>
                 <span class="post-meta">
                   <Heart class="meta-icon" />
@@ -72,9 +70,6 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
     gap: 1.5rem;
   }
   .item-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 6px;
     min-width: 0;
     flex: 1;
     word-break: break-word;
@@ -85,6 +80,11 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.5;
+  }
+  .inline-external {
+    color: var(--text-muted);
+    margin-left: 6px;
+    vertical-align: -1px;
   }
   .post-meta {
     display: flex;

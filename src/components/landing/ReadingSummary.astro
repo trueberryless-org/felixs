@@ -3,65 +3,33 @@ import { getReadingSummary } from "@/lib/books";
 import Section from "@/components/utils/Section.astro";
 import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
-import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 
 const summary = await getReadingSummary();
 ---
 
 {
   summary && summary.latest && Array.isArray(summary.favorites) && (
-    <Section
-      title="Bookshelf"
-      description="I like to read books and I catalog them in bookhive."
-    >
+    <Section title="Bookshelf">
       <ActionLink slot="header-actions" href="/books" text="View all" />
 
       <List>
         {(() => {
           return [
             <li class="list-item">
-              <span class="item-main">
-                {summary.latest.hiveId ? (
-                  <a
-                    href={`https://bookhive.buzz/books/${summary.latest.hiveId}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="book-link"
-                  >
-                    <span>{summary.latest.title}</span>
-                    <ExternalIcon />
-                  </a>
-                ) : (
-                  <span>{summary.latest.title}</span>
-                )}
-              </span>
+              <span class="item-main">{summary.latest.title}</span>
               <span class="item-meta">
                 {summary.latest.startedAt
                   ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString()}`
                   : "Started: Unknown"}
               </span>
             </li>,
-            ...summary.favorites.map((book) => {
+            ...summary.favorites.map((book, bookIndex) => {
               const stars = (book.stars ?? 0) / 2;
               const full = Math.floor(stars);
               const half = stars - full >= 0.5;
               return (
                 <li class="list-item">
-                  <span class="item-main">
-                    {book.hiveId ? (
-                      <a
-                        href={`https://bookhive.buzz/books/${book.hiveId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="book-link"
-                      >
-                        <span>{book.title}</span>
-                        <ExternalIcon />
-                      </a>
-                    ) : (
-                      <span>{book.title}</span>
-                    )}
-                  </span>
+                  <span class="item-main">{book.title}</span>
                   <span
                     class="item-meta star-rating"
                     aria-label={`${stars} out of 5 stars`}
@@ -69,6 +37,7 @@ const summary = await getReadingSummary();
                     {Array.from({ length: 5 }).map((_, i) => {
                       const isFull = i < full;
                       const isHalf = !isFull && i === full && half;
+                      const gradientId = `half-${book.hiveId ?? bookIndex}-${i}`;
                       return (
                         <svg
                           viewBox="0 0 16 16"
@@ -86,7 +55,7 @@ const summary = await getReadingSummary();
                         >
                           {isHalf && (
                             <defs>
-                              <linearGradient id={`half-${book.hiveId ?? i}`}>
+                              <linearGradient id={gradientId}>
                                 <stop offset="50%" stop-color="currentColor" />
                                 <stop
                                   offset="50%"
@@ -99,9 +68,7 @@ const summary = await getReadingSummary();
                           <path
                             d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25Z"
                             fill={
-                              isHalf
-                                ? `url(#half-${book.hiveId ?? i})`
-                                : "currentColor"
+                              isHalf ? `url(#${gradientId})` : "currentColor"
                             }
                           />
                         </svg>
@@ -119,19 +86,6 @@ const summary = await getReadingSummary();
 }
 
 <style>
-  .book-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    text-decoration: none;
-    color: inherit;
-    transition: color 0.2s ease;
-  }
-
-  .book-link:hover {
-    color: var(--text);
-  }
-
   .star-rating {
     display: inline-flex;
     align-items: center;

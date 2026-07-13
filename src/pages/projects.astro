@@ -1,6 +1,7 @@
 ---
 import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
 import Projects from "@/components/projects/Projects.astro";
+import PageHeader from "@/components/utils/PageHeader.astro";
 
 export const prerender = false;
 
@@ -16,7 +17,15 @@ Astro.response.headers.set(
 
 <LayoutBreadcrumbs title="Projects | Felix Schneider">
   <div class="projects-wrapper">
-    <h1>Open Source</h1>
+    <PageHeader title="Open Source">
+      <Fragment slot="description">
+        It's about the fun and community. Take a look at what I do on my <a
+          href="https://github.com/trueberryless"
+          target="_blank"
+          rel="noopener noreferrer">GitHub</a
+        >.
+      </Fragment>
+    </PageHeader>
 
     <Projects server:defer>
       <div slot="fallback" class="loading-indicator">
@@ -37,6 +46,6 @@ Astro.response.headers.set(
     padding: 48px;
     text-align: center;
     font-style: italic;
-    color: #666;
+    color: var(--text-muted);
   }
 </style>

@@ -15,36 +15,16 @@ import SectionSkeleton from "@/components/utils/SectionSkeleton.astro";
   <div class="content-wrapper layout-stream">
     <Intro />
     <RecentPosts server:defer>
-      <SectionSkeleton
-        slot="fallback"
-        title="Recent Blog Posts"
-        description="Longer-form writing and notes published through my AT Protocol feed."
-        rows={3}
-      />
+      <SectionSkeleton slot="fallback" title="Recent Blog Posts" rows={3} />
     </RecentPosts>
     <ReadingSummary server:defer>
-      <SectionSkeleton
-        slot="fallback"
-        title="Bookshelf"
-        description="I like to read books and I catalog them in bookhive."
-        rows={4}
-      />
+      <SectionSkeleton slot="fallback" title="Bookshelf" rows={4} />
     </ReadingSummary>
     <UpcomingEvents server:defer>
-      <SectionSkeleton
-        slot="fallback"
-        title="Upcoming Events"
-        description="Community meetups and conferences I'm planning to attend."
-        rows={1}
-      />
+      <SectionSkeleton slot="fallback" title="Upcoming Events" rows={1} />
     </UpcomingEvents>
     <RecentBlueskyPosts server:defer>
-      <SectionSkeleton
-        slot="fallback"
-        title="Bluesky"
-        description="Short thoughts I share on the decentralized social web."
-        rows={4}
-      />
+      <SectionSkeleton slot="fallback" title="Bluesky" rows={4} />
     </RecentBlueskyPosts>
   </div>
 </Layout>
