@@ -45,11 +45,28 @@ async function jsonFetch<T = any>(
   }
 }
 
+async function batchAll<T, R>(
+  items: T[],
+  size: number,
+  fn: (item: T) => Promise<R>
+): Promise<R[]> {
+  const results: R[] = [];
+  for (let i = 0; i < items.length; i += size) {
+    const chunk = items.slice(i, i + size);
+    results.push(...(await Promise.all(chunk.map(fn))));
+  }
+  return results;
+}
+
+function getGithubToken(): string | undefined {
+  return process.env.GITHUB_TOKEN;
+}
+
 function githubHeaders(): Record<string, string> {
   const headers: Record<string, string> = {
     Accept: "application/vnd.github+json",
   };
-  const token = import.meta.env.GITHUB_TOKEN;
+  const token = getGithubToken();
   if (token) headers.Authorization = `token ${token}`;
   return headers;
 }
@@ -162,12 +179,10 @@ async function fetchOrg(
     if (nameWithOwner) repoNames.add(nameWithOwner);
   }
 
-  const stars = await Promise.all(
-    [...repoNames].map((n) =>
-      jsonFetch<any>(`${GITHUB_API}/repos/${n}`, { headers: githubHeaders() })
-        .then((r) => r.stargazers_count || 0)
-        .catch(() => 0)
-    )
+  const stars = await batchAll([...repoNames], 5, (n) =>
+    jsonFetch<any>(`${GITHUB_API}/repos/${n}`, { headers: githubHeaders() })
+      .then((r) => r.stargazers_count || 0)
+      .catch(() => 0)
   );
 
   const url = profile?.blog?.startsWith("http")
@@ -187,13 +202,13 @@ async function fetchOrg(
 }
 
 export async function fetchProjects(): Promise<ProjectsData | null> {
-  if (!import.meta.env.GITHUB_TOKEN) {
+  if (!getGithubToken()) {
     console.warn("[data] GITHUB_TOKEN not set, projects will be empty");
     return null;
   }
   const [own, contributed] = await Promise.allSettled([
     fetchOwnRepos(),
-    Promise.all(SHOWCASE_ORGS.map(([o, d]) => fetchOrg(o, d))),
+    batchAll(SHOWCASE_ORGS, 3, ([o, d]) => fetchOrg(o, d)),
   ]);
   const ownProjects = own.status === "fulfilled" ? own.value : [];
   const contributedProjects =
@@ -390,8 +405,8 @@ export async function fetchEvents(): Promise<Event[] | null> {
   ] as string[];
 
   const [records, backlinks] = await Promise.all([
-    Promise.all(uris.map(fetchRecord)),
-    Promise.all(uris.map(fetchBacklinks)),
+    batchAll(uris, 10, fetchRecord),
+    batchAll(uris, 10, fetchBacklinks),
   ]);
 
   const dids = new Set<string>();
@@ -406,7 +421,7 @@ export async function fetchEvents(): Promise<Event[] | null> {
     })
   );
 
-  const profileList = await Promise.all([...dids].map(fetchProfile));
+  const profileList = await batchAll([...dids], 10, fetchProfile);
   const profiles: Record<string, any> = {};
   [...dids].forEach((d, i) => (profiles[d] = profileList[i]));
 

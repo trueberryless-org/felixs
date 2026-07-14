@@ -1,36 +1,50 @@
 ---
 import EventCard from "@/components/events/EventCard.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchEvents } from "@/lib/data";
 
-interface Props {
-  events: any[];
-}
+const events = await fetchEvents().catch(() => null);
+const hasData = Boolean(events && events.length > 0);
 
-const { events } = Astro.props;
 const now = Date.now();
-const processed = events.map((e) => ({
-  ...e,
-  startDate: new Date(e.startDate),
-  endDate: new Date(e.endDate),
-  isPast: new Date(e.endDate).getTime() < now,
-}));
+const processed = hasData
+  ? events!.map((e) => ({
+      ...e,
+      startDate: new Date(e.startDate),
+      endDate: new Date(e.endDate),
+      isPast: new Date(e.endDate).getTime() < now,
+    }))
+  : [];
 
 const upcoming = processed.filter((e) => !e.isPast);
 const past = processed.filter((e) => e.isPast);
 ---
 
-<div class="timeline-container">
-  {upcoming.map((event) => <EventCard event={event} />)}
+{
+  hasData ? (
+    <div class="timeline-container">
+      {upcoming.map((event) => (
+        <EventCard event={event} />
+      ))}
 
-  {
-    upcoming.length > 0 && past.length > 0 && (
-      <div class="today-divider">
-        <span class="today-text">Today</span>
-      </div>
-    )
-  }
+      {upcoming.length > 0 && past.length > 0 && (
+        <div class="today-divider">
+          <span class="today-text">Today</span>
+        </div>
+      )}
 
-  {past.map((event) => <EventCard event={event} />)}
-</div>
+      {past.map((event) => (
+        <EventCard event={event} />
+      ))}
+    </div>
+  ) : (
+    <Fallback
+      description="My RSVPs live on ATproto and aren't reachable right now. You can view them directly on atmo.rsvp."
+      fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
+      fallbackLabel="See my RSVPs on atmo.rsvp"
+    />
+  )
+}
 
 <style>
   .timeline-container {

@@ -1,56 +1,62 @@
 ---
 import Section from "@/components/utils/Section.astro";
-import Fallback from "@/components/utils/Fallback.astro";
-import LiveIndicator from "@/components/utils/LiveIndicator.astro";
-import ListSkeleton from "@/components/landing/ListSkeleton.astro";
-import UpcomingEventsInner from "@/components/landing/UpcomingEventsInner.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
-import type { Event } from "@/lib/data";
+import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchEvents } from "@/lib/data";
 
-interface Props {
-  events: Event[] | null;
-}
-
-const { events } = Astro.props;
+const events = await fetchEvents().catch(() => null);
 const now = Date.now();
-const hasUpcoming = Boolean(
-  events && events.some((e) => new Date(e.startDate).getTime() > now)
-);
+const items = events
+  ? events
+      .map((e) => ({ ...e, startDate: new Date(e.startDate) }))
+      .filter((e) => e.startDate.getTime() > now)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+      .slice(0, 3)
+  : [];
+const hasUpcoming = items.length > 0;
 ---
 
 <Section title="Upcoming Events">
-  <div slot="header-actions" class="header-cluster">
-    <LiveIndicator status={hasUpcoming ? "static" : "loading"} />
-    <ActionLink href="/events" text="View all" />
-  </div>
-  <div
-    class="hydrate"
-    data-hydrate="landing/upcoming-events"
-    data-state={hasUpcoming ? "static" : "loading"}
-  >
-    <div data-content>
-      {
-        hasUpcoming ? (
-          <UpcomingEventsInner events={events!} />
-        ) : (
-          <ListSkeleton rows={2} />
-        )
-      }
-    </div>
-    <div data-fallback>
+  <ActionLink slot="header-actions" href="/events" text="View all" />
+  {
+    hasUpcoming ? (
+      <List>
+        {items.map((event) => (
+          <li class="list-item clickable">
+            <a
+              href={event.atmoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="event-link"
+            >
+              <div class="item-left">
+                <span class="item-main">
+                  {event.data.name || "Untitled Network Event"}
+                </span>
+              </div>
+              <span class="arrow">→</span>
+            </a>
+          </li>
+        ))}
+      </List>
+    ) : (
       <Fallback
         description="My RSVPs live on ATproto."
         fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
         fallbackLabel="See my RSVPs on atmo.rsvp"
       />
-    </div>
-  </div>
+    )
+  }
 </Section>
 
 <style>
-  .header-cluster {
+  .event-link {
     display: flex;
+    width: 100%;
+    justify-content: space-between;
     align-items: center;
-    gap: 12px;
+    text-decoration: none;
+    color: inherit;
   }
 </style>

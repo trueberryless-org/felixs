@@ -98,8 +98,9 @@ const socialLinks = [
       `${maxScroll}px`
     );
   };
-  window.addEventListener("scroll", updateMaxScroll);
+  window.addEventListener("scroll", updateMaxScroll, { passive: true });
   window.addEventListener("resize", updateMaxScroll);
+  new ResizeObserver(updateMaxScroll).observe(document.body);
   updateMaxScroll();
 </script>
 

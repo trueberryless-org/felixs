@@ -1,36 +1,34 @@
 ---
 import Book from "@/components/books/Book.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchBooks } from "@/lib/data";
 
-interface BookItem {
-  hiveId: string;
-  title: string;
-  authors: string;
-  coverUrl: string | null;
-  rotation: string;
-  thickness: number;
-}
-
-interface Props {
-  books: BookItem[];
-}
-
-const { books } = Astro.props;
+const books = await fetchBooks().catch(() => null);
+const hasData = Boolean(books && books.length > 0);
 ---
 
-<div class="books-grid">
-  {
-    books.map((book) => (
-      <Book
-        title={book.title}
-        authors={book.authors}
-        coverUrl={book.coverUrl}
-        rotation={book.rotation}
-        hiveId={book.hiveId}
-        thickness={book.thickness}
-      />
-    ))
-  }
-</div>
+{
+  hasData ? (
+    <div class="books-grid">
+      {books!.map((book) => (
+        <Book
+          title={book.title}
+          authors={book.authors}
+          coverUrl={book.coverUrl}
+          rotation={book.rotation}
+          hiveId={book.hiveId}
+          thickness={book.thickness}
+        />
+      ))}
+    </div>
+  ) : (
+    <Fallback
+      description="My reading log lives on ATproto through Bookhive and isn't reachable right now. You can browse it directly on Bookhive."
+      fallbackHref="https://bookhive.buzz/profile/felixs.dev"
+      fallbackLabel="Browse my bookshelf on Bookhive"
+    />
+  )
+}
 
 <style>
   .books-grid {

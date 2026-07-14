@@ -1,0 +1,73 @@
+---
+import Section from "@/components/utils/Section.astro";
+
+const skeletons = [1, 2, 3, 4];
+---
+
+<Section title="Contributions">
+  <div class="projects-grid">
+    {
+      skeletons.map(() => (
+        <div class="skeleton-card">
+          <div class="skeleton-line title" />
+          <div class="skeleton-line desc" />
+          <div class="skeleton-line desc short" />
+        </div>
+      ))
+    }
+  </div>
+</Section>
+
+<style>
+  .projects-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  @media (min-width: 640px) {
+    .projects-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .skeleton-card {
+    background: var(--card-bg);
+    box-shadow: inset 0px 4px 12px var(--header-shadow);
+    border-radius: var(--radius-card);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .skeleton-line {
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line.title {
+    height: 20px;
+    width: 50%;
+  }
+
+  .skeleton-line.desc {
+    height: 14px;
+    width: 100%;
+  }
+
+  .skeleton-line.desc.short {
+    width: 70%;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+</style>

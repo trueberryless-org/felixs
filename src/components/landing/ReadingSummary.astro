@@ -1,53 +1,40 @@
 ---
 import Section from "@/components/utils/Section.astro";
-import Fallback from "@/components/utils/Fallback.astro";
-import LiveIndicator from "@/components/utils/LiveIndicator.astro";
-import ListSkeleton from "@/components/landing/ListSkeleton.astro";
-import ReadingSummaryInner from "@/components/landing/ReadingSummaryInner.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
-import type { ReadingSummary } from "@/lib/data";
+import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { buildReadingSummary, fetchBooks } from "@/lib/data";
 
-interface Props {
-  summary: ReadingSummary | null;
-}
-
-const { summary } = Astro.props;
-const hasData = Boolean(summary);
+const books = await fetchBooks().catch(() => null);
+const summary = books ? buildReadingSummary(books) : null;
 ---
 
 <Section title="Reading Summary">
-  <div slot="header-actions" class="header-cluster">
-    <LiveIndicator status={hasData ? "static" : "loading"} />
-    <ActionLink href="/books" text="View all" />
-  </div>
-  <div
-    class="hydrate"
-    data-hydrate="landing/reading-summary"
-    data-state={hasData ? "static" : "loading"}
-  >
-    <div data-content>
-      {
-        summary ? (
-          <ReadingSummaryInner summary={summary} />
-        ) : (
-          <ListSkeleton rows={4} />
-        )
-      }
-    </div>
-    <div data-fallback>
+  <ActionLink slot="header-actions" href="/books" text="View all" />
+  {
+    summary ? (
+      <List>
+        <li class="list-item">
+          <span class="item-main">{summary.latest.title}</span>
+          <span class="item-meta">
+            {summary.latest.startedAt
+              ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString()}`
+              : "Started: Unknown"}
+          </span>
+        </li>
+        {summary.favorites.map((book) => (
+          <li class="list-item">
+            <span class="item-main">{book.title}</span>
+            <span class="item-meta">{(book.stars ?? 0) / 2} stars</span>
+          </li>
+        ))}
+      </List>
+    ) : (
       <Fallback
         description="I track my reading through Bookhive on ATproto."
         fallbackHref="https://bookhive.buzz/profile/felixs.dev"
         fallbackLabel="Browse my bookshelf on Bookhive"
       />
-    </div>
-  </div>
-</Section>
-
-<style>
-  .header-cluster {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+    )
   }
-</style>
+</Section>

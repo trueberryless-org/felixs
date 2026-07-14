@@ -2,46 +2,21 @@
 import LayoutPage from "@/layouts/LayoutPage.astro";
 import BooksContent from "@/components/books/BooksContent.astro";
 import BooksSkeleton from "@/components/books/BooksSkeleton.astro";
-import Fallback from "@/components/utils/Fallback.astro";
-import LiveIndicator from "@/components/utils/LiveIndicator.astro";
-import { fetchBooks } from "@/lib/data";
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
 
 export const prerender = true;
-
-const books = await fetchBooks().catch((err) => {
-  console.error("[books] build-time fetch failed:", err);
-  return null;
-});
-const hasData = Boolean(books && books.length > 0);
 ---
 
 <LayoutPage title="Bookshelf | Felix Schneider">
   <div class="page-head">
     <h1>Bookshelf</h1>
-    <LiveIndicator status={hasData ? "static" : "loading"} />
+    <Breadcrumbs />
   </div>
 
-  <div
-    class="hydrate"
-    data-hydrate="books"
-    data-state={hasData ? "static" : "loading"}
-  >
-    <div data-content>
-      {hasData ? <BooksContent books={books!} /> : <BooksSkeleton />}
-    </div>
-    <div data-fallback>
-      <Fallback
-        description="My reading log lives on ATproto through Bookhive and isn't reachable right now. You can browse it directly on Bookhive."
-        fallbackHref="https://bookhive.buzz/profile/felixs.dev"
-        fallbackLabel="Browse my bookshelf on Bookhive"
-      />
-    </div>
-  </div>
+  <BooksContent server:defer>
+    <BooksSkeleton slot="fallback" />
+  </BooksContent>
 </LayoutPage>
-
-<script>
-  import "@/scripts/hydrate";
-</script>
 
 <style>
   .page-head {
@@ -49,7 +24,7 @@ const hasData = Boolean(books && books.length > 0);
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    margin-bottom: 5rem;
+    margin-bottom: 24px;
   }
 
   h1 {
