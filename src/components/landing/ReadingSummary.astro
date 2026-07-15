@@ -18,7 +18,7 @@ const summary = books ? buildReadingSummary(books) : null;
           <span class="item-main">{summary.latest.title}</span>
           <span class="item-meta">
             {summary.latest.startedAt
-              ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString()}`
+              ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString("en-US")}`
               : "Started: Unknown"}
           </span>
         </li>

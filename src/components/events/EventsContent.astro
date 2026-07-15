@@ -16,7 +16,9 @@ const processed = hasData
     }))
   : [];
 
-const upcoming = processed.filter((e) => !e.isPast);
+const upcoming = processed
+  .filter((e) => !e.isPast)
+  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime());
 const past = processed.filter((e) => e.isPast);
 ---
 
