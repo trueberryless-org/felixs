@@ -3,8 +3,10 @@ import YearGroup from "@/components/blog/YearGroup.astro";
 import Fallback from "@/components/utils/Fallback.astro";
 import { fetchPosts } from "@/lib/data";
 import { groupPostsByYear } from "@/lib/posts";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
 const posts = await fetchPosts().catch(() => null);
+applyCache(Astro.response, posts ? longLivedCache : degradedCache);
 const { years, postsByYear } =
   posts && posts.length > 0
     ? groupPostsByYear(posts)

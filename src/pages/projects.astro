@@ -1,7 +1,6 @@
 ---
 import LayoutPage from "@/layouts/LayoutPage.astro";
 import ProjectsContent from "@/components/projects/ProjectsContent.astro";
-import ProjectsSkeleton from "@/components/projects/ProjectsSkeleton.astro";
 import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
 
 export const prerender = true;
@@ -13,9 +12,7 @@ export const prerender = true;
     <Breadcrumbs />
   </div>
 
-  <ProjectsContent server:defer>
-    <ProjectsSkeleton slot="fallback" />
-  </ProjectsContent>
+  <ProjectsContent />
 </LayoutPage>
 
 <style>

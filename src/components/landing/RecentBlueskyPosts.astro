@@ -6,6 +6,7 @@ import List from "@/components/utils/List.astro";
 import Fallback from "@/components/utils/Fallback.astro";
 import { actorDid } from "@/lib/const";
 import { fetchBluesky } from "@/lib/data";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
 interface Props {
   displayLimit?: number;
@@ -14,6 +15,7 @@ interface Props {
 const { displayLimit = 4 } = Astro.props;
 
 const posts = await fetchBluesky().catch(() => null);
+applyCache(Astro.response, posts ? longLivedCache : degradedCache);
 const items =
   posts && posts.length > 0
     ? [...posts]

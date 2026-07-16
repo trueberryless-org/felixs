@@ -5,8 +5,10 @@ import List from "@/components/utils/List.astro";
 import Fallback from "@/components/utils/Fallback.astro";
 import { fetchPosts } from "@/lib/data";
 import { processPost } from "@/lib/posts";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
 const posts = await fetchPosts().catch(() => null);
+applyCache(Astro.response, posts ? longLivedCache : degradedCache);
 const items =
   posts && posts.length > 0
     ? [...posts]

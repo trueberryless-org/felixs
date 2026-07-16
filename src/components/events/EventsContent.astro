@@ -2,8 +2,10 @@
 import EventCard from "@/components/events/EventCard.astro";
 import Fallback from "@/components/utils/Fallback.astro";
 import { fetchEvents } from "@/lib/data";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
 const events = await fetchEvents().catch(() => null);
+applyCache(Astro.response, events ? longLivedCache : degradedCache);
 const hasData = Boolean(events && events.length > 0);
 
 const now = Date.now();

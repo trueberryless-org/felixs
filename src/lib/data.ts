@@ -71,25 +71,95 @@ function githubHeaders(): Record<string, string> {
   return headers;
 }
 
+const GITHUB_MAX_RETRIES = 5;
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/**
+ * GitHub fetch with per-request timeout and rate-limit-aware retries.
+ *
+ * GitHub's Search API in particular enforces a low secondary rate limit
+ * (~30 req/min authenticated). When we hit it, GitHub answers 403/429 with a
+ * `Retry-After` header (or `x-ratelimit-reset` when the primary budget is
+ * exhausted). We honour those and retry instead of silently dropping data,
+ * which is what previously caused undercounted contributions.
+ */
+async function githubFetch(
+  url: string,
+  init: RequestInit = {}
+): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        ...init,
+        headers: { ...githubHeaders(), ...(init.headers || {}) },
+        signal: controller.signal,
+      });
+    } catch (err) {
+      // Transient network failure (ECONNRESET, timeout abort, DNS, ...).
+      // Retry with backoff so a single blip doesn't undercount contributions.
+      if (attempt < GITHUB_MAX_RETRIES) {
+        const waitMs = Math.min(2 ** attempt * 1000, 30000);
+        console.warn(
+          `[data] GitHub network error, retrying in ${Math.round(
+            waitMs / 1000
+          )}s: ${url}`
+        );
+        await sleep(waitMs);
+        continue;
+      }
+      throw err;
+    } finally {
+      clearTimeout(timer);
+    }
+
+    const rateLimited =
+      res.status === 429 ||
+      (res.status === 403 && res.headers.get("x-ratelimit-remaining") === "0");
+
+    if (rateLimited && attempt < GITHUB_MAX_RETRIES) {
+      const retryAfter = res.headers.get("retry-after");
+      const reset = res.headers.get("x-ratelimit-reset");
+      let waitMs: number;
+      if (retryAfter) {
+        waitMs = Number(retryAfter) * 1000;
+      } else if (reset) {
+        waitMs = Number(reset) * 1000 - Date.now();
+      } else {
+        waitMs = 2 ** attempt * 1000;
+      }
+      waitMs = Math.min(Math.max(waitMs, 1000), 60000);
+      console.warn(
+        `[data] GitHub rate limited (${res.status}), retrying in ${Math.round(
+          waitMs / 1000
+        )}s: ${url}`
+      );
+      await sleep(waitMs);
+      continue;
+    }
+
+    return res;
+  }
+}
+
+async function githubJson<T = any>(url: string): Promise<T> {
+  const res = await githubFetch(url);
+  if (!res.ok) throw new Error(`${res.status} ${res.statusText} - ${url}`);
+  return (await res.json()) as T;
+}
+
 async function paginateGithub(url: string): Promise<any[]> {
   const items: any[] = [];
   let next: string | null = url;
   while (next) {
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
-    try {
-      const res = await fetch(next, {
-        headers: githubHeaders(),
-        signal: controller.signal,
-      });
-      if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-      items.push(...(await res.json()));
-      const link = res.headers.get("link") || "";
-      const match = link.match(/<([^>]+)>;\s*rel="next"/);
-      next = match ? match[1] : null;
-    } finally {
-      clearTimeout(timer);
-    }
+    const res = await githubFetch(next);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    items.push(...(await res.json()));
+    const link = res.headers.get("link") || "";
+    const match = link.match(/<([^>]+)>;\s*rel="next"/);
+    next = match ? match[1] : null;
   }
   return items;
 }
@@ -143,17 +213,25 @@ async function searchPRs(owner: string) {
   const items: any[] = [];
   let totalCount = 0;
   const perPage = 100;
+  // GitHub's Search API hard-caps at 1000 results (10 pages x 100), so this is
+  // the maximum retrievable. `total_count` still reports the true total.
   const maxPages = 10;
 
   for (let page = 1; page <= maxPages; page++) {
-    const data = await jsonFetch<{ items: any[]; total_count: number }>(
-      `${GITHUB_API}/search/issues?q=${encodeURIComponent(
-        `type:pr is:merged author:${GITHUB_USERNAME} user:${owner}`
-      )}&per_page=${perPage}&page=${page}`,
-      { headers: githubHeaders() }
-    ).catch(() => null);
+    let data: { items: any[]; total_count: number } | null = null;
+    try {
+      data = await githubJson<{ items: any[]; total_count: number }>(
+        `${GITHUB_API}/search/issues?q=${encodeURIComponent(
+          `type:pr is:merged author:${GITHUB_USERNAME} user:${owner}`
+        )}&per_page=${perPage}&page=${page}`
+      );
+    } catch (err) {
+      // A genuine failure after retries: keep what we have but flag it so an
+      // undercount is visible in logs rather than passing silently.
+      console.warn(`[data] searchPRs incomplete for ${owner}:`, err);
+      break;
+    }
 
-    if (!data) break;
     totalCount = data.total_count ?? totalCount;
     items.push(...(data.items ?? []));
     if (!data.items?.length || items.length >= totalCount) break;
@@ -168,9 +246,7 @@ async function fetchOrg(
 ): Promise<ContributedOrg> {
   const [search, profile] = await Promise.all([
     searchPRs(owner).catch(() => ({ items: [], totalCount: 0 })),
-    jsonFetch<any>(`${GITHUB_API}/users/${owner}`, {
-      headers: githubHeaders(),
-    }).catch(() => null),
+    githubJson<any>(`${GITHUB_API}/users/${owner}`).catch(() => null),
   ]);
 
   const repoNames = new Set<string>();
@@ -180,7 +256,7 @@ async function fetchOrg(
   }
 
   const stars = await batchAll([...repoNames], 5, (n) =>
-    jsonFetch<any>(`${GITHUB_API}/repos/${n}`, { headers: githubHeaders() })
+    githubJson<any>(`${GITHUB_API}/repos/${n}`)
       .then((r) => r.stargazers_count || 0)
       .catch(() => 0)
   );
@@ -208,7 +284,9 @@ export async function fetchProjects(): Promise<ProjectsData | null> {
   }
   const [own, contributed] = await Promise.allSettled([
     fetchOwnRepos(),
-    batchAll(SHOWCASE_ORGS, 3, ([o, d]) => fetchOrg(o, d)),
+    // Low concurrency: the Search API secondary rate limit is strict, so we
+    // trade a little build time for complete, reliable contribution counts.
+    batchAll(SHOWCASE_ORGS, 2, ([o, d]) => fetchOrg(o, d)),
   ]);
   const ownProjects = own.status === "fulfilled" ? own.value : [];
   const contributedProjects =
