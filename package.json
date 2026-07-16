@@ -21,7 +21,7 @@
     "@astrojs/netlify": "^7.0.13",
     "@astrojs/node": "^10.1.4",
     "@astrojs/sitemap": "^3.7.3",
-    "@atproto/lex": "^0.1.4",
+    "@atproto/lex": "^0.1.5",
     "@lucide/astro": "^1.21.0",
     "astro": "^6.4.8",
     "octokit": "^5.0.5",
