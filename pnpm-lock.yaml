@@ -18,7 +18,7 @@ importers:
         specifier: ^3.7.3
         version: 3.7.3
       '@atproto/lex':
-        specifier: ^0.1.4
+        specifier: ^0.1.5
         version: 0.1.7
       '@lucide/astro':
         specifier: ^1.21.0
