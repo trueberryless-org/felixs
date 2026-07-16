@@ -13,8 +13,9 @@ export function processPost(post: AugmentedPost) {
   };
 
   const constructUrl = () => {
-    if (post.data.publication?.url && post.data.path) {
-      const baseUrl = post.data.publication.url.replace(/\/$/, "");
+    const pubUrl = post.data.publication?.url;
+    if (pubUrl && /^https?:\/\//i.test(pubUrl) && post.data.path) {
+      const baseUrl = pubUrl.replace(/\/$/, "");
       const path = post.data.path.startsWith("/")
         ? post.data.path
         : `/${post.data.path}`;

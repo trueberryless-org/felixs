@@ -97,9 +97,12 @@ const summarize = (item: any): string => {
                 {String(result.reason?.message || result.reason)}
               </div>
             )}
-            {result.status === "fulfilled" && !result.value && (
-              <div class="empty">No {label.toLowerCase()} returned.</div>
-            )}
+            {result.status === "fulfilled" &&
+              (!result.value ||
+                (Array.isArray(result.value) &&
+                  result.value.length === 0)) && (
+                <div class="empty">No {label.toLowerCase()} returned.</div>
+              )}
             {result.status === "fulfilled" &&
               Array.isArray(result.value) &&
               result.value.map((item: any) => (

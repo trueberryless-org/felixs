@@ -14,8 +14,8 @@ const items =
     ? [...posts]
         .sort(
           (a, b) =>
-            new Date(b.data.publishedAt).getTime() -
-            new Date(a.data.publishedAt).getTime()
+            (new Date(b.data.publishedAt).getTime() || 0) -
+            (new Date(a.data.publishedAt).getTime() || 0)
         )
         .slice(0, 3)
     : null;

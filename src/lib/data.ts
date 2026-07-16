@@ -346,10 +346,18 @@ export async function fetchPosts(): Promise<AugmentedPost[] | null> {
   const pubMap: Record<string, any> = {};
   for (const p of rawPubs) pubMap[p.id] = p.data;
 
-  return rawPosts.map((post: any) => ({
-    ...post,
-    data: { ...post.data, publication: pubMap[post.data.site] || null },
-  }));
+  return rawPosts
+    .filter((post: any) => {
+      const publishedAt = post?.data?.publishedAt;
+      return (
+        typeof publishedAt === "string" &&
+        Number.isFinite(Date.parse(publishedAt))
+      );
+    })
+    .map((post: any) => ({
+      ...post,
+      data: { ...post.data, publication: pubMap[post.data.site] || null },
+    }));
 }
 
 function isFinished(status: unknown): boolean {
@@ -509,9 +517,19 @@ export async function fetchEvents(): Promise<Event[] | null> {
       if (!value?.name) return null;
       const did = uri.match(/^at:\/\/([^/]+)\//)?.[1] ?? "";
       const rkey = uri.match(/^at:\/\/[^/]+\/[^/]+\/(.+)$/)?.[1] ?? "";
-      const startDate =
-        value.startsAt || value.createdAt || new Date().toISOString();
-      const endDate = value.endsAt || startDate;
+      const rawStart = value.startsAt || value.createdAt;
+      if (
+        typeof rawStart !== "string" ||
+        !Number.isFinite(Date.parse(rawStart))
+      ) {
+        return null;
+      }
+      const startDate = rawStart;
+      const endDate =
+        typeof value.endsAt === "string" &&
+        Number.isFinite(Date.parse(value.endsAt))
+          ? value.endsAt
+          : startDate;
       const atmoUrl =
         rkey && did
           ? `https://atmo.rsvp/p/${did}/e/${rkey}`
