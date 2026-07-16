@@ -99,8 +99,7 @@ const summarize = (item: any): string => {
             )}
             {result.status === "fulfilled" &&
               (!result.value ||
-                (Array.isArray(result.value) &&
-                  result.value.length === 0)) && (
+                (Array.isArray(result.value) && result.value.length === 0)) && (
                 <div class="empty">No {label.toLowerCase()} returned.</div>
               )}
             {result.status === "fulfilled" &&
