@@ -33,6 +33,7 @@ const summary = books ? buildReadingSummary(books) : null;
               <span class="item-main">{book.title}</span>
               <span
                 class="item-meta star-rating"
+                role="img"
                 aria-label={`${stars} out of 5 stars`}
               >
                 {Array.from({ length: 5 }).map((_, i) => {
