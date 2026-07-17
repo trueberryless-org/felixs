@@ -1,0 +1,67 @@
+---
+const count = 12;
+---
+
+<div class="skeleton-shelf">
+  {
+    Array.from({ length: count }).map(() => (
+      <div class="skeleton-book">
+        <div class="skeleton-cover" />
+        <div class="skeleton-line title" />
+        <div class="skeleton-line author" />
+      </div>
+    ))
+  }
+</div>
+
+<style>
+  .skeleton-shelf {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 4rem 2.5rem;
+    padding-top: 1rem;
+    padding-bottom: 2rem;
+  }
+
+  .skeleton-book {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .skeleton-cover {
+    width: 140px;
+    height: 210px;
+    background: var(--card-bg);
+    border-radius: 2px 4px 4px 2px;
+    border: 1px solid var(--border);
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line {
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line.title {
+    height: 14px;
+    width: 80%;
+  }
+
+  .skeleton-line.author {
+    height: 12px;
+    width: 60%;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+</style>

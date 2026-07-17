@@ -1,90 +1,25 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import EventCard from "@/components/events/EventCard.astro";
-import PageHeader from "@/components/utils/PageHeader.astro";
-import { getProcessedEvents } from "@/lib/events";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import EventsContent from "@/components/events/EventsContent.astro";
+import EventsSkeleton from "@/components/events/EventsSkeleton.astro";
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
 
-export const prerender = false;
-
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=0, s-maxage=604800, stale-while-revalidate=31536000"
-);
-
-const allEvents = await getProcessedEvents();
-
-const upcoming = allEvents.filter((e) => !e.isPast);
-const past = allEvents.filter((e) => e.isPast);
+export const prerender = true;
 ---
 
-<LayoutBreadcrumbs title="Events | Felix Schneider">
-  <div class="events-page">
-    <div class="events-header">
-      <PageHeader
-        title="Events"
-        description="Meetups, conferences, and community gatherings I've RSVP'd to."
-      />
-    </div>
-
-    <div class="timeline-container">
-      {upcoming.map((event) => <EventCard event={event} />)}
-
-      {
-        upcoming.length > 0 && past.length > 0 && (
-          <div class="today-divider">
-            <span class="today-text">Today</span>
-          </div>
-        )
-      }
-
-      {past.map((event) => <EventCard event={event} />)}
-    </div>
+<LayoutPage title="Events | Felix Schneider">
+  <div class="page-head">
+    <h1>Events</h1>
+    <Breadcrumbs />
   </div>
-</LayoutBreadcrumbs>
+
+  <EventsContent server:defer>
+    <EventsSkeleton slot="fallback" />
+  </EventsContent>
+</LayoutPage>
 
 <style>
-  .events-page {
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .events-header {
-    padding-left: 160px;
-    box-sizing: border-box;
-  }
-
-  .timeline-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .today-divider {
-    display: flex;
-    align-items: center;
-    margin: 20px 0 60px 0;
-    width: 100%;
-  }
-
-  .today-divider::before,
-  .today-divider::after {
-    content: "";
-    flex: 1;
-    border-top: 2px dotted var(--border);
-  }
-
-  .today-text {
-    padding: 0 24px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  @media (max-width: 768px) {
-    .events-header {
-      padding-left: 0;
-    }
+  .page-head h1 {
+    letter-spacing: 0.05em;
   }
 </style>

@@ -1,63 +1,74 @@
 ---
-import { getBlueskyPosts } from "@/lib/bluesky";
 import { Heart } from "@lucide/astro";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
 import { actorDid } from "@/lib/const";
+import { fetchBluesky } from "@/lib/data";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
 interface Props {
-  fetchLimit?: number;
   displayLimit?: number;
 }
 
-const { fetchLimit = 100, displayLimit = 4 } = Astro.props;
+const { displayLimit = 4 } = Astro.props;
 
-const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
+const posts = await fetchBluesky().catch(() => null);
+applyCache(Astro.response, posts ? longLivedCache : degradedCache);
+const items =
+  posts && posts.length > 0
+    ? [...posts]
+        .sort((a, b) => b.likes - a.likes)
+        .slice(0, displayLimit)
+        .sort(
+          (a, b) =>
+            (new Date(b.createdAt).getTime() || 0) -
+            (new Date(a.createdAt).getTime() || 0)
+        )
+    : null;
 ---
 
-{
-  filteredPosts.length > 0 && (
-    <Section title="Bluesky">
-      <ActionLink
-        href={`https://bsky.app/profile/${actorDid}`}
-        slot="header-actions"
-        text="View profile"
-        external
-      />
-
+<Section title="Bluesky">
+  <ActionLink
+    slot="header-actions"
+    href={`https://bsky.app/profile/${actorDid}`}
+    text="View profile"
+  />
+  {
+    items ? (
       <List>
-        {filteredPosts.map((post) => {
-          const postUrl = post.postUrl;
-          const text = post.text;
-          const likes = post.likes;
-
-          return (
-            <li class="list-item clickable">
-              <a
-                href={postUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                class="post-link"
-              >
-                <span class="item-main">
-                  <span class="post-text">{text}</span>
-                </span>
-                <span class="post-meta">
-                  <Heart class="meta-icon" />
-                  <span>{likes}</span>
-                </span>
-              </a>
-            </li>
-          );
-        })}
+        {items.map((post) => (
+          <li class="list-item clickable">
+            <a
+              href={post.postUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="bsky-link"
+            >
+              <span class="bsky-item-main">
+                <span class="bsky-text">{post.text}</span>
+              </span>
+              <span class="bsky-meta">
+                <Heart class="bsky-icon" />
+                <span>{post.likes}</span>
+              </span>
+            </a>
+          </li>
+        ))}
       </List>
-    </Section>
-  )
-}
+    ) : (
+      <Fallback
+        description="My most-liked recent Bluesky posts usually appear here."
+        fallbackHref={`https://bsky.app/profile/${actorDid}`}
+        fallbackLabel="Open my Bluesky profile"
+      />
+    )
+  }
+</Section>
 
 <style>
-  .post-link {
+  .bsky-link {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -66,19 +77,21 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
     color: inherit;
     gap: 1.5rem;
   }
-  .item-main {
+  .bsky-item-main {
+    display: flex;
+    align-items: center;
     min-width: 0;
     flex: 1;
     word-break: break-word;
   }
-  .post-text {
+  .bsky-text {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.5;
   }
-  .post-meta {
+  .bsky-meta {
     display: flex;
     align-items: center;
     gap: 4px;
@@ -86,7 +99,7 @@ const filteredPosts = await getBlueskyPosts(fetchLimit, displayLimit);
     font-weight: 500;
     flex-shrink: 0;
   }
-  .meta-icon {
+  .bsky-icon {
     width: 14px;
     height: 14px;
     display: block;

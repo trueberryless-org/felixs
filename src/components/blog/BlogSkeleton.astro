@@ -1,0 +1,85 @@
+---
+const rowsPerYear = [4, 3];
+---
+
+<div class="skeleton-years">
+  {
+    rowsPerYear.map((count) => (
+      <section class="skeleton-year">
+        <div class="skeleton-watermark" />
+        <div class="skeleton-posts">
+          {Array.from({ length: count }).map(() => (
+            <div class="skeleton-post">
+              <div class="skeleton-line title" />
+              <div class="skeleton-line meta" />
+            </div>
+          ))}
+        </div>
+      </section>
+    ))
+  }
+</div>
+
+<style>
+  .skeleton-years {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+
+  .skeleton-year {
+    position: relative;
+    padding-top: 20px;
+  }
+
+  .skeleton-watermark {
+    position: absolute;
+    top: -40px;
+    left: -60px;
+    height: 12rem;
+    width: 20rem;
+    background: var(--border);
+    opacity: 0.05;
+    border-radius: 8px;
+    z-index: -1;
+  }
+
+  .skeleton-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .skeleton-post {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+  }
+
+  .skeleton-line {
+    background: var(--border);
+    border-radius: 4px;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
+  }
+
+  .skeleton-line.title {
+    height: 20px;
+    width: 40%;
+  }
+
+  .skeleton-line.meta {
+    height: 14px;
+    width: 100px;
+  }
+
+  @keyframes skeleton-pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.4;
+    }
+  }
+</style>

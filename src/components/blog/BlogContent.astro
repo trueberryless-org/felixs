@@ -1,0 +1,39 @@
+---
+import YearGroup from "@/components/blog/YearGroup.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchPosts } from "@/lib/data";
+import { groupPostsByYear } from "@/lib/posts";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
+
+const posts = await fetchPosts().catch(() => null);
+applyCache(Astro.response, posts ? longLivedCache : degradedCache);
+const { years, postsByYear } =
+  posts && posts.length > 0
+    ? groupPostsByYear(posts)
+    : { years: [] as string[], postsByYear: {} };
+const hasData = years.length > 0;
+---
+
+{
+  hasData ? (
+    <div class="blog-container">
+      {years.map((year) => (
+        <YearGroup year={year} posts={postsByYear[year]} />
+      ))}
+    </div>
+  ) : (
+    <Fallback
+      description="My blog posts live on ATproto and aren't reachable right now. You can read them directly on Leaflet."
+      fallbackHref="https://leaflet.pub/p/felixs.dev"
+      fallbackLabel="Read on Leaflet"
+    />
+  )
+}
+
+<style>
+  .blog-container {
+    display: flex;
+    flex-direction: column;
+    gap: 80px;
+  }
+</style>

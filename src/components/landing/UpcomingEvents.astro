@@ -1,25 +1,31 @@
 ---
-import { getProcessedEvents } from "@/lib/events";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import List from "@/components/utils/List.astro";
 import ExternalIcon from "@/components/utils/ExternalIcon.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { fetchEvents } from "@/lib/data";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
-const allEvents = await getProcessedEvents();
-
-const upcomingEvents = allEvents
-  .filter((e) => !e.isPast)
-  .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
-  .slice(0, 3);
+const events = await fetchEvents().catch(() => null);
+applyCache(Astro.response, events ? longLivedCache : degradedCache);
+const now = Date.now();
+const items = events
+  ? events
+      .map((e) => ({ ...e, startDate: new Date(e.startDate) }))
+      .filter((e) => e.startDate.getTime() > now)
+      .sort((a, b) => a.startDate.getTime() - b.startDate.getTime())
+      .slice(0, 3)
+  : [];
+const hasUpcoming = items.length > 0;
 ---
 
-{
-  upcomingEvents.length > 0 && (
-    <Section title="Upcoming Events">
-      <ActionLink slot="header-actions" href="/events" text="View all" />
-
+<Section title="Upcoming Events">
+  <ActionLink slot="header-actions" href="/events" text="View all" />
+  {
+    hasUpcoming ? (
       <List>
-        {upcomingEvents.map((event) => (
+        {items.map((event) => (
           <li class="list-item clickable">
             <a
               href={event.atmoUrl}
@@ -37,9 +43,15 @@ const upcomingEvents = allEvents
           </li>
         ))}
       </List>
-    </Section>
-  )
-}
+    ) : (
+      <Fallback
+        description="My RSVPs live on ATproto."
+        fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
+        fallbackLabel="See my RSVPs on atmo.rsvp"
+      />
+    )
+  }
+</Section>
 
 <style>
   .event-link {

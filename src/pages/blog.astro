@@ -1,38 +1,19 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import YearGroup from "@/components/blog/YearGroup.astro";
-import PageHeader from "@/components/utils/PageHeader.astro";
-import { getGroupedPosts } from "@/lib/blog";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import BlogContent from "@/components/blog/BlogContent.astro";
+import BlogSkeleton from "@/components/blog/BlogSkeleton.astro";
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
 
-export const prerender = false;
-
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=0, s-maxage=604800, stale-while-revalidate=31536000"
-);
-
-const { groupedPosts, years } = await getGroupedPosts();
+export const prerender = true;
 ---
 
-<LayoutBreadcrumbs title="Blog | Felix Schneider">
-  <PageHeader title="Blog Posts">
-    <Fragment slot="description">
-      I write recipes, notes and longer thoughts on <a
-        href="https://leaflet.pub/p/felixs.dev"
-        target="_blank"
-        rel="noopener noreferrer">Leaflet</a
-      >.
-    </Fragment>
-  </PageHeader>
-  <div class="blog-container">
-    {years.map((year) => <YearGroup year={year} posts={groupedPosts[year]} />)}
+<LayoutPage title="Blog | Felix Schneider">
+  <div class="page-head">
+    <h1>Blog Posts</h1>
+    <Breadcrumbs />
   </div>
-</LayoutBreadcrumbs>
 
-<style>
-  .blog-container {
-    display: flex;
-    flex-direction: column;
-    gap: 80px;
-  }
-</style>
+  <BlogContent server:defer>
+    <BlogSkeleton slot="fallback" />
+  </BlogContent>
+</LayoutPage>

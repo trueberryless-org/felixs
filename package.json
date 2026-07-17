@@ -1,6 +1,6 @@
 {
   "name": "trueberryless",
-  "homepage": "https://trueberryless.org",
+  "homepage": "https://felixs.dev",
   "bugs": {
     "url": "https://github.com/trueberryless-org/trueberryless/issues"
   },
@@ -9,7 +9,7 @@
     "url": "https://github.com/trueberryless-org/trueberryless.git"
   },
   "license": "MIT",
-  "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
+  "author": "Felix Schneider <trueberryless@gmail.com> (https://felixs.dev)",
   "scripts": {
     "astro": "astro",
     "build": "lex build --override && astro build",
@@ -18,13 +18,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
-    "@astrojs/netlify": "^7.0.13",
-    "@astrojs/node": "^10.1.4",
+    "@astrojs/netlify": "^8.1.1",
+    "@astrojs/node": "^11.0.2",
     "@astrojs/sitemap": "^3.7.3",
-    "@atproto/lex": "^0.1.4",
+    "@atproto/lex": "^0.1.5",
     "@lucide/astro": "^1.21.0",
-    "astro": "^6.4.8",
-    "octokit": "^5.0.5",
+    "astro": "^7.0.7",
     "sharp": "^0.35.2",
     "simple-icons-astro": "^16.1.0"
   },
