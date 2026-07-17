@@ -3,7 +3,6 @@ import Section from "@/components/utils/Section.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
 import List from "@/components/utils/List.astro";
 import ExternalIcon from "@/components/utils/ExternalIcon.astro";
-import Fallback from "@/components/utils/Fallback.astro";
 import { fetchEvents } from "@/lib/data";
 import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
@@ -20,10 +19,10 @@ const items = events
 const hasUpcoming = items.length > 0;
 ---
 
-<Section title="Upcoming Events">
-  <ActionLink slot="header-actions" href="/events" text="View all" />
-  {
-    hasUpcoming ? (
+{
+  hasUpcoming && (
+    <Section title="Upcoming Events">
+      <ActionLink slot="header-actions" href="/events" text="View all" />
       <List>
         {items.map((event) => (
           <li class="list-item clickable">
@@ -43,15 +42,9 @@ const hasUpcoming = items.length > 0;
           </li>
         ))}
       </List>
-    ) : (
-      <Fallback
-        description="My RSVPs live on ATproto."
-        fallbackHref="https://atmo.rsvp/p/did:plc:pbjvqaziagcyv2vqodldn5op"
-        fallbackLabel="See my RSVPs on atmo.rsvp"
-      />
-    )
-  }
-</Section>
+    </Section>
+  )
+}
 
 <style>
   .event-link {
