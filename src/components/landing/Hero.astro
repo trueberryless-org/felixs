@@ -43,7 +43,7 @@ const { name } = Astro.props;
     </div>
     <div
       class="hex"
-      style="top: 58%; left: 35%; --size: 180px; z-index: 5; --speed: 0.33;"
+      style="top: 58%; left: 35%; --size: 180px; z-index: 5; --speed: 0.53;"
     >
     </div>
     <div
@@ -171,13 +171,16 @@ const { name } = Astro.props;
 
   .hexagon-space {
     position: absolute;
-    top: 50%;
-    left: 50%;
     /* On small viewports the space still overhangs the hero by 8%; on wide
        viewports it caps at a fixed box so the hexagons cluster tighter. */
     width: min(116%, 1400px);
     height: min(116%, 1000px);
-    transform: translate(-50%, -50%);
+    /* Center without `transform` so this element does NOT create a stacking
+       context. That lets each hex's own z-index compete directly with the
+       hero text (20) and floating logos (40) — e.g. the dashed hex at
+       z-index 30 sits in front of the text but behind the logos. */
+    left: calc(50% - min(116%, 1400px) / 2);
+    top: calc(50% - min(116%, 1000px) / 2);
     pointer-events: none;
   }
 

@@ -146,7 +146,6 @@ main {
   background: var(--bg);
   padding-top: 100px;
   flex: 1;
-  min-height: calc(100vh - 100px);
 }
 
 .content-wrapper {
