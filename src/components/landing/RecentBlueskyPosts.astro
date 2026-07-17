@@ -23,7 +23,8 @@ const items =
         .slice(0, displayLimit)
         .sort(
           (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+            (new Date(b.createdAt).getTime() || 0) -
+            (new Date(a.createdAt).getTime() || 0)
         )
     : null;
 ---

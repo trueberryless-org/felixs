@@ -152,16 +152,3 @@ ul {
 .page-head h1 {
   margin: 0;
 }
-
-/* Hydration state visibility */
-[data-hydrate] [data-fallback] {
-  display: none;
-}
-
-[data-hydrate][data-state="failed"] [data-content] {
-  display: none;
-}
-
-[data-hydrate][data-state="failed"] [data-fallback] {
-  display: block;
-}

@@ -6,9 +6,9 @@ export function processPost(post: AugmentedPost) {
     const date = new Date(dateString);
     if (isNaN(date.getTime())) return "N/A";
     const month = date
-      .toLocaleString("en-US", { month: "short" })
+      .toLocaleString("en-US", { month: "short", timeZone: "UTC" })
       .toUpperCase();
-    const day = date.getDate().toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");
     return `${month}.${day}`;
   };
 
@@ -41,7 +41,7 @@ export function groupPostsByYear(posts: AugmentedPost[]) {
   );
   const postsByYear: Record<string, AugmentedPost[]> = {};
   for (const post of sorted) {
-    const year = new Date(post.data.publishedAt).getFullYear().toString();
+    const year = new Date(post.data.publishedAt).getUTCFullYear().toString();
     (postsByYear[year] ??= []).push(post);
   }
   const years = Object.keys(postsByYear).sort((a, b) => Number(b) - Number(a));
