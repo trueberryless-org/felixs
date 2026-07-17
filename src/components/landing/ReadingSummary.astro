@@ -1,37 +1,42 @@
 ---
-import { getReadingSummary } from "@/lib/books";
 import Section from "@/components/utils/Section.astro";
-import List from "@/components/utils/List.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import List from "@/components/utils/List.astro";
+import Fallback from "@/components/utils/Fallback.astro";
+import { buildReadingSummary, fetchBooks } from "@/lib/data";
+import { applyCache, degradedCache, longLivedCache } from "@/lib/cache";
 
-const summary = await getReadingSummary();
+const books = await fetchBooks().catch(() => null);
+applyCache(Astro.response, books ? longLivedCache : degradedCache);
+const summary = books ? buildReadingSummary(books) : null;
 ---
 
-{
-  summary && summary.latest && Array.isArray(summary.favorites) && (
-    <Section title="Reading Summary">
-      <ActionLink slot="header-actions" href="/books" text="View all" />
-
+<Section title="Reading Summary">
+  <ActionLink slot="header-actions" href="/books" text="View all" />
+  {
+    summary ? (
       <List>
-        {(() => {
-          return [
-            <li class="list-item">
-              <span class="item-main">{summary.latest.title}</span>
-              <span class="item-meta">
-                {summary.latest.startedAt
-                  ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString()}`
-                  : "Started: Unknown"}
-              </span>
-            </li>,
-            ...summary.favorites.map((book) => (
-              <li class="list-item">
-                <span class="item-main">{book.title}</span>
-                <span class="item-meta">{(book.stars ?? 0) / 2} stars</span>
-              </li>
-            )),
-          ];
-        })()}
+        <li class="list-item">
+          <span class="item-main">{summary.latest.title}</span>
+          <span class="item-meta">
+            {summary.latest.startedAt
+              ? `Started: ${new Date(summary.latest.startedAt).toLocaleDateString("en-US")}`
+              : "Started: Unknown"}
+          </span>
+        </li>
+        {summary.favorites.map((book) => (
+          <li class="list-item">
+            <span class="item-main">{book.title}</span>
+            <span class="item-meta">{(book.stars ?? 0) / 2} stars</span>
+          </li>
+        ))}
       </List>
-    </Section>
-  )
-}
+    ) : (
+      <Fallback
+        description="I track my reading through Bookhive on ATproto."
+        fallbackHref="https://bookhive.buzz/profile/felixs.dev"
+        fallbackLabel="Browse my bookshelf on Bookhive"
+      />
+    )
+  }
+</Section>

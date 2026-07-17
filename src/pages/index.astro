@@ -3,10 +3,15 @@ import Layout from "@/layouts/Layout.astro";
 import Hero from "@/components/landing/Hero.astro";
 import Intro from "@/components/landing/Intro.astro";
 import RecentPosts from "@/components/landing/RecentPosts.astro";
+import RecentPostsSkeleton from "@/components/landing/RecentPostsSkeleton.astro";
 import RecentBlueskyPosts from "@/components/landing/RecentBlueskyPosts.astro";
+import RecentBlueskyPostsSkeleton from "@/components/landing/RecentBlueskyPostsSkeleton.astro";
 import ReadingSummary from "@/components/landing/ReadingSummary.astro";
+import ReadingSummarySkeleton from "@/components/landing/ReadingSummarySkeleton.astro";
 import UpcomingEvents from "@/components/landing/UpcomingEvents.astro";
-import SectionSkeleton from "@/components/utils/SectionSkeleton.astro";
+import UpcomingEventsSkeleton from "@/components/landing/UpcomingEventsSkeleton.astro";
+
+export const prerender = true;
 ---
 
 <Layout title="Felix Schneider">
@@ -15,16 +20,16 @@ import SectionSkeleton from "@/components/utils/SectionSkeleton.astro";
   <div class="content-wrapper layout-stream">
     <Intro />
     <RecentPosts server:defer>
-      <SectionSkeleton slot="fallback" title="Recent Blog Posts" rows={3} />
+      <RecentPostsSkeleton slot="fallback" />
     </RecentPosts>
     <ReadingSummary server:defer>
-      <SectionSkeleton slot="fallback" title="Reading Summary" rows={4} />
+      <ReadingSummarySkeleton slot="fallback" />
     </ReadingSummary>
     <UpcomingEvents server:defer>
-      <SectionSkeleton slot="fallback" title="Upcoming Events" rows={1} />
+      <UpcomingEventsSkeleton slot="fallback" />
     </UpcomingEvents>
     <RecentBlueskyPosts server:defer>
-      <SectionSkeleton slot="fallback" title="Bluesky" rows={4} />
+      <RecentBlueskyPostsSkeleton slot="fallback" />
     </RecentBlueskyPosts>
   </div>
 </Layout>

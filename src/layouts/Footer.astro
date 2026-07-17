@@ -17,7 +17,7 @@ const textLinks = [
 const socialLinks = [
   {
     name: "Bluesky",
-    url: "https://bsky.app/profile/trueberryless.org",
+    url: "https://bsky.app/profile/felixs.dev",
     iconComponent: Bluesky,
   },
   {
@@ -98,8 +98,8 @@ const socialLinks = [
       `${maxScroll}px`
     );
   };
-  window.addEventListener("scroll", updateMaxScroll);
   window.addEventListener("resize", updateMaxScroll);
+  new ResizeObserver(updateMaxScroll).observe(document.body);
   updateMaxScroll();
 </script>
 

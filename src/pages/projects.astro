@@ -1,42 +1,16 @@
 ---
-import LayoutBreadcrumbs from "@/layouts/LayoutBreadcrumbs.astro";
-import Projects from "@/components/projects/Projects.astro";
+import LayoutPage from "@/layouts/LayoutPage.astro";
+import ProjectsContent from "@/components/projects/ProjectsContent.astro";
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
 
-export const prerender = false;
-
-Astro.response.headers.set(
-  "Cache-Control",
-  "public, max-age=86400, stale-while-revalidate=7776000"
-);
-Astro.response.headers.set(
-  "CDN-Cache-Control",
-  "public, max-age=604800, stale-while-revalidate=7776000"
-);
+export const prerender = true;
 ---
 
-<LayoutBreadcrumbs title="Projects | Felix Schneider">
-  <div class="projects-wrapper">
+<LayoutPage title="Projects | Felix Schneider">
+  <div class="page-head">
     <h1>Open Source</h1>
-
-    <Projects server:defer>
-      <div slot="fallback" class="loading-indicator">
-        Loading projects from GitHub...
-      </div>
-    </Projects>
+    <Breadcrumbs />
   </div>
-</LayoutBreadcrumbs>
 
-<style>
-  .projects-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .loading-indicator {
-    padding: 48px;
-    text-align: center;
-    font-style: italic;
-    color: #666;
-  }
-</style>
+  <ProjectsContent />
+</LayoutPage>

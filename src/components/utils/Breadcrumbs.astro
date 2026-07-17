@@ -1,32 +1,21 @@
 ---
 const pathname = Astro.url.pathname;
 const segments = pathname.split("/").filter(Boolean);
-
 const isSingleSegment = segments.length === 1;
 const backUrl = isSingleSegment ? "/" : "/" + segments.slice(0, -1).join("/");
-const backLabel = "Back";
 ---
 
 {
   segments.length > 0 && (
-    <nav aria-label="Breadcrumb" class="breadcrumbs">
-      <a href={backUrl} class="action-link">
-        <span class="arrow">←</span>
-        {backLabel}
-      </a>
-    </nav>
+    <a href={backUrl} class="back-link" aria-label="Go back">
+      <span class="arrow">←</span>
+      Back
+    </a>
   )
 }
 
 <style>
-  .breadcrumbs {
-    display: block;
-    position: absolute;
-    top: 8px;
-    right: 24px;
-  }
-
-  .action-link {
+  .back-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -40,7 +29,7 @@ const backLabel = "Back";
     transition: opacity 0.2s ease;
   }
 
-  .action-link:hover {
+  .back-link:hover {
     opacity: 0.8;
   }
 
@@ -49,7 +38,7 @@ const backLabel = "Back";
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  .action-link:hover .arrow {
+  .back-link:hover .arrow {
     transform: translateX(-4px);
   }
 </style>
