@@ -76,7 +76,13 @@ const pathname = Astro.url.pathname;
                   );
                 })
               }
-              <li class="nav-item" style={`--item-index: ${links.length}`}>
+              <li
+                class="nav-item nav-separator"
+                style={`--item-index: ${links.length}`}
+                aria-hidden="true"
+              >
+              </li>
+              <li class="nav-item" style={`--item-index: ${links.length + 1}`}>
                 <button
                   id="theme-toggle"
                   class="theme-toggle"
@@ -134,7 +140,11 @@ const pathname = Astro.url.pathname;
     }
   };
 
-  button?.addEventListener("click", () => {
+  button?.addEventListener("click", (event) => {
+    // Prevent the same click from immediately closing the menu via the
+    // document-level click-outside handler below.
+    event.stopPropagation();
+
     if (headerInner?.classList.contains("is-open")) {
       headerInner.classList.remove("is-open");
       headerInner.classList.add("is-closing");
@@ -145,6 +155,28 @@ const pathname = Astro.url.pathname;
       headerInner?.classList.remove("is-closing");
       headerInner?.classList.add("is-open");
     }
+  });
+
+  const closeMenu = () => {
+    if (!headerInner?.classList.contains("is-open")) return;
+    headerInner.classList.remove("is-open");
+    headerInner.classList.add("is-closing");
+    setTimeout(() => {
+      headerInner.classList.remove("is-closing");
+    }, 500);
+  };
+
+  // Click outside the header closes the mobile dropdown menu.
+  document.addEventListener("click", (event) => {
+    if (!headerInner?.classList.contains("is-open")) return;
+    const target = event.target as Node | null;
+    if (target && header?.contains(target)) return;
+    closeMenu();
+  });
+
+  // Escape key also closes the menu for keyboard accessibility.
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeMenu();
   });
 
   window.addEventListener("resize", () => {
@@ -566,7 +598,9 @@ const pathname = Astro.url.pathname;
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--text-muted);
-    transition: color 0.2s ease;
+    transition:
+      color 0.2s ease,
+      transform 0.2s ease;
     white-space: nowrap;
     text-decoration: none;
   }
@@ -574,6 +608,10 @@ const pathname = Astro.url.pathname;
   .nav-links a:hover,
   .nav-links a.active {
     color: var(--text);
+  }
+
+  .nav-links a:hover {
+    transform: translateY(-1px);
   }
 
   .nav-item {
@@ -595,6 +633,11 @@ const pathname = Astro.url.pathname;
       opacity 0.3s ease,
       transform 0.5s var(--spring-bouncy);
     transition-delay: calc(0.2s + (var(--item-index) * 0.05s));
+  }
+
+  .nav-separator {
+    display: none;
+    pointer-events: none;
   }
 
   .theme-toggle {
@@ -711,6 +754,22 @@ const pathname = Astro.url.pathname;
       gap: 16px;
       padding-top: 24px;
       padding-bottom: 8px;
+    }
+
+    .nav-separator {
+      display: block;
+      align-self: stretch;
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+      opacity: 0.8;
+    }
+  }
+
+  @media (min-width: 601px) {
+    .nav-separator {
+      display: none;
     }
   }
 

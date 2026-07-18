@@ -1,0 +1,86 @@
+---
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<header class="page-header">
+  <div class="page-header-content">
+    <h1 class="page-title">{title}</h1>
+    {
+      (Astro.slots.has("description") || description) && (
+        <p class="page-description">
+          <slot name="description">{description}</slot>
+        </p>
+      )
+    }
+  </div>
+  <div class="page-header-aside">
+    <Breadcrumbs />
+  </div>
+</header>
+
+<style>
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+
+    .page-header-aside {
+      display: none;
+    }
+  }
+
+  .page-header-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .page-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.5;
+  }
+
+  .page-description {
+    font-size: 1rem;
+    color: var(--text-muted);
+    line-height: 1.55;
+    margin: 0;
+  }
+
+  .page-description :global(a) {
+    color: var(--text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--border);
+    transition:
+      text-decoration-color 0.2s ease,
+      color 0.2s ease;
+  }
+
+  .page-description :global(a:hover) {
+    color: var(--text);
+    text-decoration-color: var(--text-muted);
+  }
+</style>

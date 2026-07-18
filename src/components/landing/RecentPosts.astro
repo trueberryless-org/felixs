@@ -1,6 +1,7 @@
 ---
 import Section from "@/components/utils/Section.astro";
 import ActionLink from "@/components/utils/ActionLink.astro";
+import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 import List from "@/components/utils/List.astro";
 import Fallback from "@/components/utils/Fallback.astro";
 import { fetchPosts } from "@/lib/data";
@@ -39,7 +40,7 @@ const items =
                 <div class="item-left">
                   <span class="item-main">{title}</span>
                 </div>
-                <span class="arrow">→</span>
+                <ExternalIcon class="row-icon" />
               </a>
             </li>
           );
@@ -63,5 +64,11 @@ const items =
     align-items: center;
     text-decoration: none;
     color: inherit;
+    gap: 12px;
+  }
+
+  .row-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
   }
 </style>

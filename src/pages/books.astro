@@ -2,16 +2,21 @@
 import LayoutPage from "@/layouts/LayoutPage.astro";
 import BooksContent from "@/components/books/BooksContent.astro";
 import BooksSkeleton from "@/components/books/BooksSkeleton.astro";
-import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
+import PageHeader from "@/components/utils/PageHeader.astro";
 
 export const prerender = true;
 ---
 
 <LayoutPage title="Bookshelf | Felix Schneider">
-  <div class="page-head">
-    <h1>Bookshelf</h1>
-    <Breadcrumbs />
-  </div>
+  <PageHeader title="Bookshelf">
+    <Fragment slot="description">
+      I read fantasy and fiction. My reading list is tracked on <a
+        href="https://bookhive.buzz/profile/felixs.dev"
+        target="_blank"
+        rel="noopener noreferrer">Bookhive</a
+      >.
+    </Fragment>
+  </PageHeader>
 
   <BooksContent server:defer>
     <BooksSkeleton slot="fallback" />
