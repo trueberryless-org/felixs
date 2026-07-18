@@ -3,10 +3,11 @@ import { processPost } from "@/lib/posts";
 import ExternalIcon from "@/components/utils/ExternalIcon.astro";
 
 const { post } = Astro.props;
-const { title, formattedDate, postUrl, firstTag, otherTags } = processPost(post);
+const { title, formattedDate, postUrl, firstTag, otherTags } =
+  processPost(post);
 
-const lastSpaceIdx = title.lastIndexOf(' ');
-const titleStart = lastSpaceIdx !== -1 ? title.slice(0, lastSpaceIdx + 1) : '';
+const lastSpaceIdx = title.lastIndexOf(" ");
+const titleStart = lastSpaceIdx !== -1 ? title.slice(0, lastSpaceIdx + 1) : "";
 const titleEnd = lastSpaceIdx !== -1 ? title.slice(lastSpaceIdx + 1) : title;
 ---
 
@@ -14,7 +15,11 @@ const titleEnd = lastSpaceIdx !== -1 ? title.slice(lastSpaceIdx + 1) : title;
   <a href={postUrl} target="_blank" rel="noopener noreferrer" class="post-link">
     <div class="post-title-container">
       <h3 class="post-title">
-        {titleStart}<span class="nowrap">{titleEnd}<span class="post-external"><ExternalIcon size={11} /></span></span>
+        {titleStart}<span class="nowrap"
+          >{titleEnd}<span class="post-external"
+            ><ExternalIcon size={11} /></span
+          ></span
+        >
       </h3>
     </div>
 
@@ -41,14 +46,14 @@ const titleEnd = lastSpaceIdx !== -1 ? title.slice(lastSpaceIdx + 1) : title;
             </>
           ))
         ) : typeof otherTags === "string" ? (
-          otherTags.split(",").map((tag) => (
+          otherTags.split(",").map((tag) =>
             tag.trim() ? (
               <>
                 <span class="post-separator">&bull;</span>
                 <span class="post-meta-item">{tag.trim()}</span>
               </>
             ) : null
-          ))
+          )
         ) : otherTags ? (
           <>
             <span class="post-separator">&bull;</span>
@@ -153,13 +158,13 @@ const titleEnd = lastSpaceIdx !== -1 ? title.slice(lastSpaceIdx + 1) : title;
       gap: 6px;
     }
     .post-meta-item::before {
-      content: '/';
+      content: "/";
       color: var(--text-muted);
       opacity: 0.5;
       font-weight: bold;
     }
     .post-meta-item:first-child::before {
-      content: '↳';
+      content: "↳";
     }
   }
 </style>
