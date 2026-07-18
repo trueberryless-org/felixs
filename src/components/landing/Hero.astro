@@ -171,14 +171,8 @@ const { name } = Astro.props;
 
   .hexagon-space {
     position: absolute;
-    /* On small viewports the space still overhangs the hero by 8%; on wide
-       viewports it caps at a fixed box so the hexagons cluster tighter. */
     width: min(116%, 1400px);
     height: min(116%, 1000px);
-    /* Center without `transform` so this element does NOT create a stacking
-       context. That lets each hex's own z-index compete directly with the
-       hero text (20) and floating logos (40) — e.g. the dashed hex at
-       z-index 30 sits in front of the text but behind the logos. */
     left: calc(50% - min(116%, 1400px) / 2);
     top: calc(50% - min(116%, 1000px) / 2);
     pointer-events: none;
@@ -226,8 +220,6 @@ const { name } = Astro.props;
     position: absolute;
     top: 50%;
     left: 50%;
-    /* Same idea as .hexagon-space: fluid on small screens, capped on huge ones
-       so logos overlap more and the depth reads better. */
     width: min(100%, 1180px);
     height: min(100%, 860px);
     transform: translate(-50%, -50%);
@@ -351,11 +343,11 @@ const { name } = Astro.props;
     position: relative;
     z-index: 2;
     font-family:
-      "Datatype", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+      "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
       "Liberation Mono", "Courier New", monospace;
     font-size: clamp(3.25rem, 8vw, 7.5rem);
-    font-weight: 900;
-    letter-spacing: -0.045em;
+    font-weight: 800;
+    letter-spacing: -0.08em;
     line-height: 1.05;
     text-align: center;
     margin: 0;

@@ -1,7 +1,6 @@
 :root {
   --white: oklch(1 0 0);
   --black: oklch(0 0 0);
-  /* Warm beige (~#F5F0E6) background, dark brown text — dedicated light palette */
   --bg: oklch(0.955 0.017 85);
   --bg-subtle: oklch(0.972 0.012 85);
   --card-bg: oklch(0.988 0.008 85);
@@ -27,10 +26,10 @@
   --glow-star: oklch(0.78 0.16 85);
   --glow-pr: oklch(0.6 0.2 300);
   --text-gradient: linear-gradient(
-    135deg,
-    oklch(0.22 0.03 55) 0%,
-    oklch(0.32 0.06 45) 50%,
-    oklch(0.22 0.03 55) 100%
+    180deg,
+    oklch(0.4362 0.0666 73.15) 0%,
+    oklch(0.3705 0.0468 73.15) 50%,
+    oklch(0.4362 0.0666 73.15) 100%
   );
 }
 
@@ -58,9 +57,9 @@
   --glow-pr: oklch(0.65 0.2 300);
   --text-gradient: linear-gradient(
     180deg,
-    oklch(0.98 0.003 240) 0%,
-    oklch(0.82 0.005 240) 45%,
-    oklch(0.55 0.008 240) 100%
+    oklch(1 0.003 240) 0%,
+    oklch(0.92 0.005 240) 45%,
+    oklch(0.45 0.008 240) 100%
   );
 }
 
