@@ -258,7 +258,7 @@ const { name } = Astro.props;
       inset 0 1px 0 oklch(1 0 0 / 0.25);
     animation: floatLogo 6s ease-in-out infinite;
     transition:
-      transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+      scale 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
       box-shadow 0.25s ease,
       border-color 0.25s ease;
   }
@@ -274,7 +274,7 @@ const { name } = Astro.props;
   }
 
   .logo-wrapper:hover {
-    transform: translateY(-4px);
+    scale: 1.05;
     box-shadow:
       0 16px 42px oklch(0.2 0.02 60 / 0.22),
       inset 0 1px 0 oklch(1 0 0 / 0.3);
@@ -290,13 +290,18 @@ const { name } = Astro.props;
     border-color: oklch(0.55 0.01 250);
   }
 
+  .logo-wrapper:hover .tech-logo {
+    animation: spaceWiggle 3s ease-in-out infinite;
+  }
+
   .tech-logo {
     width: 60%;
     height: 60%;
     object-fit: contain;
     transition:
       filter 0.3s ease,
-      opacity 0.3s ease;
+      opacity 0.3s ease,
+      transform 0.3s ease;
   }
 
   @keyframes floatLogo {
@@ -306,6 +311,16 @@ const { name } = Astro.props;
     }
     50% {
       transform: translateY(-16px) rotate(3deg);
+    }
+  }
+
+  @keyframes spaceWiggle {
+    0%,
+    100% {
+      transform: scale(1) rotate(-4deg);
+    }
+    50% {
+      transform: scale(1.08) rotate(4deg);
     }
   }
 
@@ -379,7 +394,11 @@ const { name } = Astro.props;
     }
 
     .logo-wrapper:hover {
-      transform: none;
+      scale: 1;
+    }
+
+    .logo-wrapper:hover .tech-logo {
+      animation: none;
     }
   }
 
