@@ -141,8 +141,6 @@ const pathname = Astro.url.pathname;
   };
 
   button?.addEventListener("click", (event) => {
-    // Prevent the same click from immediately closing the menu via the
-    // document-level click-outside handler below.
     event.stopPropagation();
 
     if (headerInner?.classList.contains("is-open")) {
@@ -166,7 +164,6 @@ const pathname = Astro.url.pathname;
     }, 500);
   };
 
-  // Click outside the header closes the mobile dropdown menu.
   document.addEventListener("click", (event) => {
     if (!headerInner?.classList.contains("is-open")) return;
     const target = event.target as Node | null;
@@ -174,7 +171,6 @@ const pathname = Astro.url.pathname;
     closeMenu();
   });
 
-  // Escape key also closes the menu for keyboard accessibility.
   document.addEventListener("keydown", (event) => {
     if (event.key === "Escape") closeMenu();
   });
@@ -366,8 +362,10 @@ const pathname = Astro.url.pathname;
     inset: 0;
     border-radius: 1.5rem;
     background: var(--header-bg);
-    backdrop-filter: blur(17px) saturate(180%);
-    -webkit-backdrop-filter: blur(17px) saturate(180%);
+    --blur-effect: blur(17px) saturate(180%);
+    -webkit-backdrop-filter: var(--blur-effect);
+    backdrop-filter: var(--blur-effect);
+    transform: translateZ(0);
     border: 1px solid var(--border);
     box-shadow: 0 8px 30px var(--header-shadow);
     pointer-events: none;
