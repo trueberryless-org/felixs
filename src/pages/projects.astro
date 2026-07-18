@@ -1,36 +1,21 @@
 ---
 import LayoutPage from "@/layouts/LayoutPage.astro";
 import ProjectsContent from "@/components/projects/ProjectsContent.astro";
-import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
+import PageHeader from "@/components/utils/PageHeader.astro";
 
 export const prerender = true;
 ---
 
 <LayoutPage title="Projects | Felix Schneider">
-  <div class="page-head">
-    <div>
-      <h1>Open Source</h1>
-      <p class="description">
-        Here are some projects I have fun contributing to on <a
-          href="https://github.com/trueberryless"
-          target="_blank"
-          rel="noopener noreferrer">GitHub</a
-        >.
-      </p>
-    </div>
-    <Breadcrumbs />
-  </div>
+  <PageHeader title="Open Source">
+    <Fragment slot="description">
+      Here are some projects I have fun contributing to on <a
+        href="https://github.com/trueberryless"
+        target="_blank"
+        rel="noopener noreferrer">GitHub</a
+      >.
+    </Fragment>
+  </PageHeader>
 
   <ProjectsContent />
 </LayoutPage>
-
-<style>
-  .description {
-    margin-top: 0.5rem;
-  }
-
-  .description a {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-</style>

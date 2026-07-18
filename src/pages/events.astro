@@ -2,42 +2,23 @@
 import LayoutPage from "@/layouts/LayoutPage.astro";
 import EventsContent from "@/components/events/EventsContent.astro";
 import EventsSkeleton from "@/components/events/EventsSkeleton.astro";
-import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
+import PageHeader from "@/components/utils/PageHeader.astro";
 
 export const prerender = true;
 ---
 
 <LayoutPage title="Events | Felix Schneider">
-  <div class="page-head">
-    <div>
-      <h1>Events</h1>
-      <p class="description">
-        Sometimes I go outside to meet some cool people. Events live on <a
-          href="https://atmo.rsvp/p/felixs.dev"
-          target="_blank"
-          rel="noopener noreferrer">atmo.rsvp</a
-        >.
-      </p>
-    </div>
-    <Breadcrumbs />
-  </div>
+  <PageHeader title="Events">
+    <Fragment slot="description">
+      Sometimes I go outside to meet some cool people. Events live on <a
+        href="https://atmo.rsvp/p/felixs.dev"
+        target="_blank"
+        rel="noopener noreferrer">atmo.rsvp</a
+      >.
+    </Fragment>
+  </PageHeader>
 
   <EventsContent server:defer>
     <EventsSkeleton slot="fallback" />
   </EventsContent>
 </LayoutPage>
-
-<style>
-  .page-head h1 {
-    letter-spacing: 0.05em;
-  }
-
-  .description {
-    margin-top: 0.5rem;
-  }
-
-  .description a {
-    text-decoration: underline;
-    text-underline-offset: 4px;
-  }
-</style>

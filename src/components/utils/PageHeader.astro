@@ -1,4 +1,6 @@
 ---
+import Breadcrumbs from "@/components/utils/Breadcrumbs.astro";
+
 interface Props {
   title: string;
   description?: string;
@@ -8,22 +10,45 @@ const { title, description } = Astro.props;
 ---
 
 <header class="page-header">
-  <h1 class="page-title">{title}</h1>
-  {
-    (Astro.slots.has("description") || description) && (
-      <p class="page-description">
-        <slot name="description">{description}</slot>
-      </p>
-    )
-  }
+  <div class="page-header-content">
+    <h1 class="page-title">{title}</h1>
+    {
+      (Astro.slots.has("description") || description) && (
+        <p class="page-description">
+          <slot name="description">{description}</slot>
+        </p>
+      )
+    }
+  </div>
+  <div class="page-header-aside">
+    <Breadcrumbs />
+  </div>
 </header>
 
 <style>
   .page-header {
     display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 2rem;
+  }
+
+  @media (max-width: 480px) {
+    .page-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1.5rem;
+    }
+
+    .page-header-aside {
+      display: none;
+    }
+  }
+
+  .page-header-content {
+    display: flex;
     flex-direction: column;
     gap: 12px;
-    margin-bottom: 3rem;
   }
 
   .page-title {
@@ -40,7 +65,6 @@ const { title, description } = Astro.props;
     color: var(--text-muted);
     line-height: 1.55;
     margin: 0;
-    max-width: 65ch;
   }
 
   .page-header :global(a) {
