@@ -1,17 +1,34 @@
 ---
-const rowsPerYear = [4, 3];
+const rowsPerYear = [4, 6, 3];
+const titleWidths = ["65%", "45%", "80%", "55%"];
+const dateWidths = ["80px", "110px", "70px", "95px"];
+const tagWidths = ["60px", "90px", "45px", "75px"];
 ---
 
 <div class="skeleton-years">
   {
-    rowsPerYear.map((count) => (
+    rowsPerYear.map((count, yearIndex) => (
       <section class="skeleton-year">
-        <div class="skeleton-watermark" />
         <div class="skeleton-posts">
-          {Array.from({ length: count }).map(() => (
+          {Array.from({ length: count }).map((_, i) => (
             <div class="skeleton-post">
-              <div class="skeleton-line title" />
-              <div class="skeleton-line meta" />
+              <div class="skeleton-title-container">
+                <div
+                  class="skeleton-line title"
+                  style={`width: ${titleWidths[i % titleWidths.length]}`}
+                />
+              </div>
+              <div class="skeleton-meta">
+                <div
+                  class="skeleton-line date"
+                  style={`width: ${dateWidths[i % dateWidths.length]}`}
+                />
+                <span class="skeleton-separator">&bull;</span>
+                <div
+                  class="skeleton-line tag"
+                  style={`width: ${tagWidths[i % tagWidths.length]}`}
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -25,36 +42,46 @@ const rowsPerYear = [4, 3];
     display: flex;
     flex-direction: column;
     gap: 80px;
+    margin-block: 80px;
   }
 
   .skeleton-year {
+    display: flex;
+    flex-direction: column;
     position: relative;
-    padding-top: 20px;
-  }
-
-  .skeleton-watermark {
-    position: absolute;
-    top: -40px;
-    left: -60px;
-    height: 12rem;
-    width: 20rem;
-    background: var(--border);
-    opacity: 0.05;
-    border-radius: 8px;
-    z-index: -1;
+    z-index: 1;
   }
 
   .skeleton-posts {
     display: flex;
     flex-direction: column;
-    gap: 16px;
   }
 
   .skeleton-post {
     display: flex;
-    align-items: center;
-    gap: 16px;
+    flex-direction: column;
+    gap: 6px;
     padding: 16px 0;
+  }
+
+  .skeleton-title-container {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .skeleton-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    flex-shrink: 0;
+  }
+
+  .skeleton-separator {
+    color: var(--border);
+    font-size: 1.2em;
+    user-select: none;
+    animation: skeleton-pulse 1.5s ease-in-out infinite;
   }
 
   .skeleton-line {
@@ -64,13 +91,15 @@ const rowsPerYear = [4, 3];
   }
 
   .skeleton-line.title {
-    height: 20px;
-    width: 40%;
+    height: 22px;
   }
 
-  .skeleton-line.meta {
+  .skeleton-line.date {
     height: 14px;
-    width: 100px;
+  }
+
+  .skeleton-line.tag {
+    height: 14px;
   }
 
   @keyframes skeleton-pulse {
@@ -80,6 +109,56 @@ const rowsPerYear = [4, 3];
     }
     50% {
       opacity: 0.4;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .skeleton-post {
+      flex-direction: row;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 16px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .skeleton-separator {
+      display: none;
+    }
+    .skeleton-meta {
+      flex-direction: row;
+      flex-wrap: wrap;
+      row-gap: 6px;
+      column-gap: 12px;
+      padding-left: 4px;
+    }
+    .skeleton-line.date,
+    .skeleton-line.tag {
+      height: 14px;
+    }
+    .skeleton-meta > .skeleton-line {
+      position: relative;
+    }
+    .skeleton-meta > .skeleton-line::before {
+      content: '';
+      position: absolute;
+      left: -12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 4px;
+      height: 12px;
+      background: var(--border);
+      border-radius: 2px;
+      opacity: 0.5;
+    }
+    .skeleton-meta > .skeleton-line:first-child::before {
+      height: 8px;
+      width: 8px;
+      border-radius: 0 0 0 4px;
+      border-left: 2px solid var(--border);
+      border-bottom: 2px solid var(--border);
+      background: transparent;
+      left: -14px;
     }
   }
 </style>
