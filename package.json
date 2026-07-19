@@ -1,6 +1,6 @@
 {
   "name": "trueberryless",
-  "homepage": "https://trueberryless.org",
+  "homepage": "https://felixs.dev",
   "bugs": {
     "url": "https://github.com/trueberryless-org/trueberryless/issues"
   },
@@ -9,7 +9,7 @@
     "url": "https://github.com/trueberryless-org/trueberryless.git"
   },
   "license": "MIT",
-  "author": "trueberryless <trueberryless@gmail.com> (https://trueberryless.org)",
+  "author": "trueberryless <trueberryless@gmail.com> (https://felixs.dev)",
   "scripts": {
     "astro": "astro",
     "build": "lex build --override && astro build",
