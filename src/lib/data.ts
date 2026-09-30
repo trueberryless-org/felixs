@@ -94,7 +94,7 @@ async function githubFetch(
     try {
       res = await fetch(url, {
         ...init,
-        headers: { ...githubHeaders(), ...(init.headers || {}) },
+        headers: { ...githubHeaders(), ...init.headers },
         signal: controller.signal,
       });
     } catch (err) {
@@ -171,7 +171,7 @@ const titleCase = (name: string) =>
     .replace(/[-_]/g, " ")
     .replace(/\w\S*/g, (t) => t[0].toUpperCase() + t.slice(1).toLowerCase());
 
-export interface OwnProject {
+interface OwnProject {
   name: string;
   description: string | null;
   url: string;
@@ -179,7 +179,7 @@ export interface OwnProject {
   language: string | null;
 }
 
-export interface ContributedOrg {
+interface ContributedOrg {
   owner: string;
   name: string;
   description: string;
@@ -629,13 +629,13 @@ export async function fetchBluesky(): Promise<BlueskyPost[] | null> {
   });
 }
 
-export interface ResumeSkill {
+interface ResumeSkill {
   id: string;
   name: string;
   category: string | null;
 }
 
-export interface ResumePosition {
+interface ResumePosition {
   id: string;
   title: string;
   company: string;
@@ -649,7 +649,7 @@ export interface ResumePosition {
   skills: string[];
 }
 
-export interface ResumeEducation {
+interface ResumeEducation {
   id: string;
   institution: string;
   degree: string | null;
@@ -661,7 +661,7 @@ export interface ResumeEducation {
   isCurrent: boolean;
 }
 
-export interface ResumeHonor {
+interface ResumeHonor {
   id: string;
   title: string;
   issuer: string | null;
@@ -708,7 +708,7 @@ function dateTimestamp(value: string | null | undefined): number {
 
 function fragmentLabel(ref: string | null | undefined): string | null {
   if (!ref) return null;
-  const frag = ref.includes("#") ? ref.split("#").pop() : ref;
+  const frag = ref.includes("#") ? (ref.split("#").pop() ?? ref) : ref;
   const spaced = frag.replace(/([a-z])([A-Z])/g, "$1 $2");
   return spaced.charAt(0).toUpperCase() + spaced.slice(1);
 }
